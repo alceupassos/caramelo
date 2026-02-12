@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Nova_Square } from "next/font/google";
 import "./globals.css";
 import Provider from "../providers/provider";
@@ -14,11 +14,45 @@ const geistNova = Nova_Square({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#8A0000",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
-  title: "Futuresea",
-  description: "Casino web3 game on solana",
+  title: "Caramelo Casino",
+  description: "O Casino Mais Viciante da Web3 - Crash, Tigrinho, Coinflip, Mines, Dice",
+  manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icone.png",
+    apple: "/icone.png",
+  },
+  openGraph: {
+    title: "Caramelo Casino",
+    description: "O Casino Mais Viciante da Web3 - Crash, Tigrinho, Coinflip, Mines, Dice",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Caramelo Casino",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Caramelo Casino",
+    description: "O Casino Mais Viciante da Web3",
+    images: ["/og-image.jpg"],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Caramelo Casino",
   },
 };
 
@@ -28,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="pt-BR" className="dark">
       <body className={`${geistSans.variable} ${geistNova.className}`}>
         <Provider>
           <LoadingOverlay />

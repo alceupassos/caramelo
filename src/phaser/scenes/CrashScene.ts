@@ -1,4 +1,6 @@
 import * as Phaser from 'phaser';
+import { AudioManager } from '../audio/AudioManager';
+import { PremiumParticles } from '../particles/PremiumParticles';
 
 export default class MainScene extends Phaser.Scene {
     rocket!: Phaser.GameObjects.Image;
@@ -15,13 +17,13 @@ export default class MainScene extends Phaser.Scene {
 
     private launched = false;
 
+    private multiplierText!: Phaser.GameObjects.Text;
+    private currentMultiplier: number = 1.0;
+    private audioManager!: AudioManager;
+
     constructor() {
         super('MainScene');
     }
-
-
-
-
 
     preload() {
         this.load.setPath("assets/game");
@@ -38,17 +40,23 @@ export default class MainScene extends Phaser.Scene {
         this.load.spritesheet('boom', 'sprites/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
         this.load.image('avatar', 'image/astro.png');
         this.load.start();
+
+        // Preload audio assets
+        this.audioManager = new AudioManager(this);
+        this.audioManager.preload();
     }
 
     create() {
         this.crashed = false;
         this.launched = false;
         this.startTime = this.time.now;
+        this.currentMultiplier = 1.0;
         const { width, height } = this.scale;
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             this.events.off('escape', this.triggerEscape, this);
             this.events.off('launch', this.triggerLaunch, this);
             this.events.off('crash', this.triggerCrash, this);
+            this.audioManager.destroy();
         });
         this.events.on('launch', this.triggerLaunch, this);
         this.events.on('crash', this.triggerCrash, this);
@@ -100,6 +108,32 @@ export default class MainScene extends Phaser.Scene {
 
         this.vibrationOffset = 2;
 
+        // Multiplier display
+        this.multiplierText = this.add.text(
+            this.scale.width / 2, 80,
+            '1.00x',
+            {
+                fontSize: '64px',
+                fontFamily: 'monospace',
+                color: '#FFD700',
+                stroke: '#000000',
+                strokeThickness: 6,
+                shadow: { offsetX: 2, offsetY: 2, color: '#000', blur: 8, fill: true }
+            }
+        ).setOrigin(0.5).setDepth(100).setAlpha(0);
+
+        // Audio manager (already created in preload)
+        if (!this.audioManager) {
+            this.audioManager = new AudioManager(this);
+        }
+
+        // Touch to escape (mobile)
+        this.input.on('pointerdown', () => {
+            if (this.launched && !this.crashed) {
+                this.events.emit('touch-escape');
+            }
+        });
+
         let resizeTimeout: NodeJS.Timeout;
         this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
             // clearTimeout(resizeTimeout);
@@ -115,7 +149,7 @@ export default class MainScene extends Phaser.Scene {
         const width = parent.clientWidth;
         const height = parent.clientHeight;
         console.log("resize", width)
-        // Re-center sky 
+        // Re-center sky
         this.sky.setSize(width, height);
         this.sky.setPosition(width / 2, height / 2);
         // Reposition rocket (e.g. center bottom)
@@ -127,6 +161,11 @@ export default class MainScene extends Phaser.Scene {
         // Reposition station at bottom center
         if (this.station && !this.launched)
             this.station.setPosition(width / 2, height - 100); // adjust Y as needed
+
+        // Reposition multiplier text
+        if (this.multiplierText) {
+            this.multiplierText.setPosition(width / 2, 80);
+        }
     }
 
     triggerCrash() {
@@ -137,6 +176,12 @@ export default class MainScene extends Phaser.Scene {
         this.rocket.setVisible(false);
         const { x, y } = this.rocket.parentContainer;
         console.log("crash triggered", x, y);
+
+        // Camera shake and premium effects
+        this.cameras.main.shake(500, 0.015);
+        PremiumParticles.createScreenFlash(this, 0xFF4400, 300);
+        PremiumParticles.createGoldExplosion(this, x, y);
+        this.audioManager.playSFX('sfx_crash');
 
         // Add explosion at rocket's position
         const explosion = this.add.sprite(x, y, 'boom');
@@ -154,6 +199,10 @@ export default class MainScene extends Phaser.Scene {
             });
         });
 
+        // Reset multiplier display
+        this.currentMultiplier = 1.0;
+        this.multiplierText.setText('1.00x').setAlpha(0).setColor('#FFD700');
+
         // Notify React if needed
         this.events.emit('gameOver');
 
@@ -168,20 +217,20 @@ export default class MainScene extends Phaser.Scene {
 
         this.smokey.setVisible(true); // show trail
         this.smokey.start(); // start emission
-        // this.tweens.add({
-        //     targets: this.rocketContainer,
-        //     x: this.rocketContainer.x + 2,
-        //     y: this.rocketContainer.y + 2,
-        //     duration: 50,
-        //     yoyo: true,
-        //     repeat: 40,
-        //     ease: 'Sine.easeInOut',
-        // });
+
+        // Play launch SFX
+        this.audioManager.playSFX('sfx_launch');
+
+        // Show multiplier
+        this.multiplierText.setAlpha(1);
     }
 
     triggerEscape(avatar: any) {
         if (!this.launched) return;
         if (this.crashed) return;
+
+        // Play escape SFX
+        this.audioManager.playSFX('sfx_escape');
 
         // Use current rocket position
         const worldPos = this.rocket.getWorldTransformMatrix().decomposeMatrix();
@@ -266,6 +315,26 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
+    // Public method callable from React to update multiplier externally
+    updateMultiplier(multiplier: number) {
+        this.currentMultiplier = multiplier;
+        if (this.multiplierText) {
+            this.multiplierText.setText(`${multiplier.toFixed(2)}x`);
+            this.multiplierText.setAlpha(1);
+
+            // Color changes based on multiplier
+            if (multiplier >= 5) {
+                this.multiplierText.setColor('#FF0000');
+            } else if (multiplier >= 3) {
+                this.multiplierText.setColor('#FF6600');
+            } else if (multiplier >= 2) {
+                this.multiplierText.setColor('#FFAA00');
+            } else {
+                this.multiplierText.setColor('#FFD700');
+            }
+        }
+    }
+
     update() {
         if (!this.launched) return;
         if (this.crashed) return;
@@ -288,9 +357,35 @@ export default class MainScene extends Phaser.Scene {
         }
 
         if (this.launched && !this.crashed) {
+            // Update multiplier (exponential growth based on elapsed time)
+            this.currentMultiplier = 1 + Math.pow(elapsed, 1.5) * 0.1;
+            this.multiplierText.setText(`${this.currentMultiplier.toFixed(2)}x`);
+            this.multiplierText.setAlpha(1);
+
+            // Color changes based on multiplier
+            if (this.currentMultiplier >= 5) {
+                this.multiplierText.setColor('#FF0000');
+            } else if (this.currentMultiplier >= 3) {
+                this.multiplierText.setColor('#FF6600');
+            } else if (this.currentMultiplier >= 2) {
+                this.multiplierText.setColor('#FFAA00');
+            }
+
+            // Pulse animation every 0.5x increment
+            const prevHalf = Math.floor((this.currentMultiplier - 0.01) * 2);
+            const currHalf = Math.floor(this.currentMultiplier * 2);
+            if (currHalf > prevHalf) {
+                this.tweens.add({
+                    targets: this.multiplierText,
+                    scale: 1.3,
+                    duration: 150,
+                    yoyo: true,
+                    ease: 'Back.easeOut'
+                });
+            }
+
             // Compute progress of red effect (0 to 1)
-            const elapsed = (this.time.now - this.startTime) / 1000;
-            const redProgress = Math.min(elapsed / 50, 1); // fully red after 5 seconds
+            const redProgress = Math.min(elapsed / 50, 1); // fully red after 50 seconds
 
             // Interpolate from white (0xFFFFFF) to red (0xFF0000)
             if (redProgress === 1) {

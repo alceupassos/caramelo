@@ -1,83 +1,103 @@
 'use client'
 import Link from "next/link";
-import { CoinIcon, XIcon } from "../icos/svg";
+import { XIcon } from "../icos/svg";
 import { DiscordLogoIcon } from "@radix-ui/react-icons";
 import WalletConnectModal from "../modal/walletConnectModal";
-import { Image } from "@heroui/react";
-import { useEffect } from "react";
+import { CreditBalance } from "../wallet/CreditBalance";
+import { XPBar } from "../engagement/XPBar";
+import { StreakIndicator } from "../engagement/StreakIndicator";
+import { useState } from "react";
+
+const games = [
+    { name: 'Crash', href: '/crash', emoji: '🚀' },
+    { name: 'Tigrinho', href: '/tigrinho', emoji: '🐯' },
+    { name: 'Coinflip', href: '/coinflip', emoji: '🪙' },
+    { name: 'Mines', href: '/mines', emoji: '💣' },
+    { name: 'Dice', href: '/dice', emoji: '🎲' },
+];
 
 const Navbar = () => {
-    useEffect(()=>{
-        console.log("Navbar mounted")
-    },[])
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    return <div className="flex w-full fixed top-0 left-0 z-50">
-        <div className="w-20 sm:w-32 lg:w-52 min-w-[320px] bg-black/80 flex items-center justify-center flex-col">
-            <div className="flex items-center gap-2">
-                <Image src="/logo.png" alt="logo" className="w-20 h-20" />
-                <div className="relative">
-                    <div className="text-2xl font-bold italic">
-                        <span className="uppercase text-primary-400">futuresea</span>
-                    </div>
-                    <div className="text-2xl font-bold italic absolute top-0">
-                        <span className="transition duration-150 uppercase animate-ping">F</span>
-                        <span className="transition duration-150 uppercase animate-ping animation-delay-75">u</span>
-                        <span className="transition duration-150 uppercase animate-ping animation-delay-150">t</span>
-                        <span className="transition duration-150 uppercase animate-ping animation-delay-200">U</span>
-                        <span className="transition duration-150 uppercase animate-ping animation-delay-300">R</span>
-                        <span className="transition duration-150 uppercase animate-ping animation-delay-400">E</span>
-                        <span className="transition duration-150 uppercase animate-ping animation-delay-500">s</span>
-                        <span className="transition duration-150 uppercase animate-ping animation-delay-600">E</span>
-                        <span className="transition duration-150 uppercase animate-ping animation-delay-700">A</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div className="flex flex-col w-full">
-            <div className="items-center w-full h-[40px] bg-black/90 flex shrink-0 px-6 gap-2">
+    return (
+        <div className="flex flex-col w-full fixed top-0 left-0 z-50">
+            {/* Top bar - social links */}
+            <div className="items-center w-full h-[36px] bg-black/90 flex shrink-0 px-4 md:px-6 gap-2">
                 <div className="flex gap-1 md:gap-2.5">
-                    <Link href={"https://x.com/cornel_p"} target="_blank" className="group relative overflow-hidden transition duration-300 bg-[#303030]  text-sm font-medium h-6 w-6 p-0 min-w-0 flex items-center justify-center text-white/50 hover:text-white rounded-[6px] cursor-pointer">
+                    <Link href={"https://x.com/cornel_p"} target="_blank" className="group relative overflow-hidden transition duration-300 bg-[#303030] text-sm font-medium h-6 w-6 p-0 min-w-0 flex items-center justify-center text-white/50 hover:text-white rounded-[6px] cursor-pointer">
                         <XIcon />
                     </Link>
-                </div>
-                <div className="flex gap-1 md:gap-2.5">
-                    <Link href={"https://x.com/cornel_p"} target="_blank" className="group relative overflow-hidden transition duration-300 bg-[#303030]  text-sm font-medium h-6 w-6 p-0 min-w-0 flex items-center justify-center text-white/50 hover:text-white rounded-[6px] cursor-pointer">
+                    <Link href={"https://x.com/cornel_p"} target="_blank" className="group relative overflow-hidden transition duration-300 bg-[#303030] text-sm font-medium h-6 w-6 p-0 min-w-0 flex items-center justify-center text-white/50 hover:text-white rounded-[6px] cursor-pointer">
                         <DiscordLogoIcon />
                     </Link>
                 </div>
-            </div>
-            <div className="flex items-center h-[60px] justify-end md:justify-between w-full px-6 grow bg-black/80">
-                <div className="flex items-center gap-4">
-                    <Link href={`/crash`} >
-                        <div className="flex items-center gap-2">
-                            <span className="uppercase bg-linear-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Crash</span>
-                        </div>
-                    </Link>
-                    <Link href={`/coinflip`} >
-                        <div className="flex items-center gap-2">
-                            <span className="uppercase bg-linear-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Coinflip</span>
-                        </div>
-                    </Link>
-                    <Link href={`/fomo`} >
-                        <div className="flex items-center gap-2">
-                            <span className="uppercase bg-linear-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Fomo</span>
-                        </div>
-                    </Link>
-                    {/* {isAuthenticated && user && (
-                        <Link href="/profile" className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-lg hover:bg-white/20 transition-colors">
-                            <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
-                                {user.username.charAt(0).toUpperCase()}
-                            </div>
-                            <span className="text-white text-sm font-medium hidden sm:block">
-                                {user.username}
-                            </span>
-                        </Link>
-                    )} */}
+                <div className="ml-auto flex items-center gap-3">
+                    <StreakIndicator />
+                    <XPBar />
                 </div>
-                <WalletConnectModal />
             </div>
+
+            {/* Main nav */}
+            <div className="flex items-center h-[64px] justify-between w-full px-4 md:px-6 bg-black/80 backdrop-blur-md border-b border-white/5">
+                {/* Logo + Games */}
+                <div className="flex items-center gap-4">
+                    <Link href="/" className="flex items-center gap-2 shrink-0">
+                        <img src="/caramelo.png" alt="Caramelo" className="w-10 h-10 rounded-full object-cover" />
+                        <span className="hidden sm:block text-lg font-bold text-[#ff4444]">Caramelo</span>
+                    </Link>
+
+                    {/* Desktop game links */}
+                    <div className="hidden md:flex items-center gap-1">
+                        {games.map((game) => (
+                            <Link key={game.href} href={game.href}>
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                                    <span className="text-sm">{game.emoji}</span>
+                                    <span className="uppercase text-sm font-bold bg-gradient-to-r from-primary-100 via-primary-50 to-primary-200 bg-clip-text text-transparent">
+                                        {game.name}
+                                    </span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Right side */}
+                <div className="flex items-center gap-3">
+                    <CreditBalance />
+                    <WalletConnectModal />
+
+                    {/* Mobile hamburger */}
+                    <button
+                        className="md:hidden flex flex-col gap-1 p-2"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    >
+                        <span className={`block w-5 h-0.5 bg-white transition-transform ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
+                        <span className={`block w-5 h-0.5 bg-white transition-opacity ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+                        <span className={`block w-5 h-0.5 bg-white transition-transform ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Mobile menu */}
+            {mobileMenuOpen && (
+                <div className="md:hidden bg-black/95 backdrop-blur-md border-b border-white/5 px-4 py-3">
+                    <div className="flex flex-col gap-1">
+                        {games.map((game) => (
+                            <Link
+                                key={game.href}
+                                href={game.href}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/10 transition-colors"
+                            >
+                                <span className="text-xl">{game.emoji}</span>
+                                <span className="text-white font-semibold">{game.name}</span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
-    </div>;
+    );
 };
 
 export default Navbar;

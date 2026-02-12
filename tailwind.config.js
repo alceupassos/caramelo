@@ -50,11 +50,32 @@ module.exports = {
           '75%': { transform: 'translate(-10px, -15px)' },
           '100%': { transform: 'translate(0, 0)' },
         },
+        'pulse-win': {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.05)', opacity: '0.9' },
+        },
+        'shake-loss': {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-4px)' },
+          '20%, 40%, 60%, 80%': { transform: 'translateX(4px)' },
+        },
+        'glow-neon': {
+          '0%, 100%': { boxShadow: '0 0 5px #8A0000, 0 0 20px #8A000050' },
+          '50%': { boxShadow: '0 0 20px #8A0000, 0 0 40px #8A000080' },
+        },
+        'count-up': {
+          '0%': { transform: 'translateY(100%)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
       },
       animation: {
         'rotate-x-forever': 'rotateXForever 4s linear infinite',
         'flip-coin': 'flipCoin 4s linear infinite',
         'float-cloud': 'floatCloud 12s ease-in-out infinite',
+        'pulse-win': 'pulse-win 0.6s ease-in-out infinite',
+        'shake-loss': 'shake-loss 0.5s ease-in-out',
+        'glow-neon': 'glow-neon 2s ease-in-out infinite',
+        'count-up': 'count-up 0.3s ease-out',
       },
     },
   },

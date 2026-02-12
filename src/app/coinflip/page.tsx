@@ -1,129 +1,212 @@
-'use client'
-import Layout from "@/components/layout/layout";
-import CoinflipItem from "@/components/coinflipItem";
-import { useState } from "react";
+'use client';
+import { useState, useCallback } from 'react';
+import Layout from '@/components/layout/layout';
+import { useCredits } from '@/contexts/CreditContext';
+import CoinAnimation from '@/components/coinflip/CoinAnimation';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const mockGames = [
-  {
-    id: 1,
-    avatarUrl: "/assets/images/avatar/ada.jpg",
-    username: "Player1",
-    level: 4,
-    amount: 0.0135,
-    value: 18.23,
-    chance: 0.5,
-    status: "joinable",
-  },
-  {
-    id: 2,
-    avatarUrl: "/assets/images/avatar/default.webp",
-    username: "Player2",
-    level: 4,
-    amount: 0.0030,
-    value: 4.05,
-    chance: 0.5,
-    status: "joined",
-  },
-  {
-    id: 3,
-    avatarUrl: "/assets/images/avatar/default.webp",
-    username: "Player3",
-    level: 4,
-    amount: 0.0138,
-    value: 18.60,
-    chance: 0.5,
-    status: "pending",
-  },
-  // ...more mock games
-];
+type FlipResult = {
+  choice: 'heads' | 'tails';
+  result: 'heads' | 'tails';
+  won: boolean;
+  amount: number;
+};
 
-const CoinflipPage = () => {
-  const [betAmount, setBetAmount] = useState(0.001);
-  const [side, setSide] = useState("purple");
-  const [sort, setSort] = useState("Highest Price");
+const BET_PRESETS = [100, 500, 1000, 5000, 10000, 50000];
+
+export default function CoinflipPage() {
+  const { balance, deductBet, addWinnings } = useCredits();
+  const [betAmount, setBetAmount] = useState(100);
+  const [selectedSide, setSelectedSide] = useState<'heads' | 'tails'>('heads');
+  const [flipping, setFlipping] = useState(false);
+  const [result, setResult] = useState<'heads' | 'tails' | null>(null);
+  const [lastResult, setLastResult] = useState<FlipResult | null>(null);
+  const [history, setHistory] = useState<FlipResult[]>([]);
+
+  const handleFlip = useCallback(() => {
+    if (flipping) return;
+    const bet = deductBet(betAmount, 'coinflip');
+    if (!bet) return;
+
+    const flipResult: 'heads' | 'tails' = Math.random() < 0.49 ? 'heads' : 'tails';
+    setResult(flipResult);
+    setFlipping(true);
+    setLastResult(null);
+  }, [flipping, betAmount, deductBet]);
+
+  const handleFlipComplete = useCallback(() => {
+    if (!result) return;
+    const won = result === selectedSide;
+    const winAmount = won ? betAmount * 2 : 0;
+
+    if (won) {
+      addWinnings(winAmount, 'coinflip');
+    }
+
+    const flipResult: FlipResult = {
+      choice: selectedSide,
+      result,
+      won,
+      amount: won ? winAmount : betAmount,
+    };
+
+    setLastResult(flipResult);
+    setHistory((prev) => [flipResult, ...prev].slice(0, 10));
+    setFlipping(false);
+  }, [result, selectedSide, betAmount, addWinnings]);
 
   return (
     <Layout>
       <div className="min-h-screen bg-[#101114] py-8 px-4 flex flex-col items-center">
         {/* Header */}
-        <div className="w-full max-w-4xl mb-6">
-          <div className="text-[#b6aaff] text-sm font-semibold mb-1">Pick a side and flip</div>
-          <div className="text-5xl font-extrabold text-white tracking-wide mb-2">COINFLIP</div>
-          <div className="italic text-[#b6aaff] text-lg mb-6">ALL GAMES</div>
+        <div className="w-full max-w-2xl mb-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-wide mb-2">
+            <span className="bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-600 bg-clip-text text-transparent">
+              COINFLIP
+            </span>
+          </h1>
+          <p className="text-gray-400">Escolha um lado, 49% de chance de ganhar 2x</p>
         </div>
-        {/* Bet Controls */}
-        <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between bg-[#181A20] rounded-2xl p-4 mb-8 shadow-lg border border-[#23232a]">
-          <div className="flex flex-col md:flex-row items-center gap-4 w-full">
-            <div className="flex flex-col items-center md:items-start">
-              <span className="text-gray-400 text-xs mb-1">Bet Amount <span className="text-white">(${(betAmount*18).toFixed(2)})</span></span>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  min="0.001"
-                  step="0.001"
-                  value={betAmount}
-                  onChange={e => setBetAmount(Number(e.target.value))}
-                  className="bg-[#23232a] text-white px-3 py-1 rounded-lg w-24 border border-[#23232a] focus:outline-none focus:ring-2 focus:ring-[#b6aaff]"
-                />
-                <button className="bg-[#23232a] text-white px-2 py-1 rounded">1/2</button>
-                <button className="bg-[#23232a] text-white px-2 py-1 rounded">2x</button>
-                <button className="bg-[#23232a] text-white px-2 py-1 rounded">MAX</button>
-              </div>
-            </div>
-            <div className="flex flex-col items-center md:items-start">
-              <span className="text-gray-400 text-xs mb-1">Choose Side</span>
-              <div className="flex gap-2">
-                <button
-                  className={`w-10 h-10 rounded-lg border-2 ${side === "purple" ? "border-[#b6aaff] bg-[#7858fe]" : "border-[#23232a] bg-[#23232a]"}`}
-                  onClick={() => setSide("purple")}
-                >
-                  <span className="text-white text-xl">🟣</span>
-                </button>
-                <button
-                  className={`w-10 h-10 rounded-lg border-2 ${side === "gray" ? "border-[#b6aaff] bg-[#23232a]" : "border-[#23232a] bg-[#23232a]"}`}
-                  onClick={() => setSide("gray")}
-                >
-                  <span className="text-white text-xl">⚫</span>
-                </button>
-              </div>
-            </div>
-            <button className="bg-[#1de9b6] hover:bg-[#13bfa6] text-white font-bold px-6 py-2 rounded-lg ml-0 md:ml-4 mt-4 md:mt-0">+ Create Flip</button>
-          </div>
-          <div className="flex items-center mt-4 md:mt-0">
-            <span className="text-gray-400 mr-2">Sort By:</span>
-            <select
-              className="bg-[#23232a] text-white px-2 py-1 rounded border border-[#23232a]"
-              value={sort}
-              onChange={e => setSort(e.target.value)}
+
+        {/* Coin Animation */}
+        <div className="mb-8">
+          <CoinAnimation flipping={flipping} result={result} onComplete={handleFlipComplete} />
+        </div>
+
+        {/* Result */}
+        <AnimatePresence>
+          {lastResult && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className={`text-center mb-6 px-6 py-3 rounded-xl border-2 ${
+                lastResult.won
+                  ? 'border-green-500 bg-green-900/20 text-green-400'
+                  : 'border-red-500 bg-red-900/20 text-red-400'
+              }`}
             >
-              <option>Highest Price</option>
-              <option>Lowest Price</option>
-              <option>Newest</option>
-            </select>
-          </div>
-        </div>
-        {/* Game List */}
-        <div className="w-full max-w-4xl flex flex-col gap-4">
-          {mockGames.map(game => (
-            <div key={game.id} className="flex items-center justify-between bg-linear-to-br from-[#181A20] to-[#23232a] rounded-2xl px-6 py-4 shadow-lg border border-[#23232a]">
-              <CoinflipItem {...game} />
-              <div className="flex items-center gap-2 ml-4">
-                {game.status === "joinable" && (
-                  <button className="bg-[#1de9b6] hover:bg-[#13bfa6] text-white font-bold px-6 py-2 rounded-lg">Join</button>
-                )}
-                {game.status === "joined" && (
-                  <span className="italic text-[#b6aaff] font-bold px-6 py-2 rounded-lg">JOINED</span>
-                )}
-                <button className="bg-[#23232a] hover:bg-[#181A20] text-white px-3 py-2 rounded-lg">
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="#b6aaff" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </button>
-              </div>
+              <p className="text-2xl font-bold">
+                {lastResult.won ? `+${lastResult.amount.toLocaleString()}` : `-${lastResult.amount.toLocaleString()}`}
+              </p>
+              <p className="text-sm opacity-70">
+                {lastResult.won ? 'Voce ganhou!' : 'Tente novamente'}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Controls */}
+        <div className="w-full max-w-md bg-[#181A20] rounded-2xl p-6 border border-[#23232a] space-y-5">
+          {/* Side Selection */}
+          <div>
+            <p className="text-gray-400 text-sm mb-2">Escolha o lado</p>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setSelectedSide('heads')}
+                disabled={flipping}
+                className={`py-4 rounded-xl font-bold text-lg transition-all ${
+                  selectedSide === 'heads'
+                    ? 'bg-gradient-to-br from-yellow-600 to-amber-500 text-white scale-[1.02] shadow-lg shadow-yellow-900/40'
+                    : 'bg-[#23232a] text-gray-400 hover:bg-[#2a2a32]'
+                } disabled:opacity-50`}
+              >
+                🟡 Heads
+              </button>
+              <button
+                onClick={() => setSelectedSide('tails')}
+                disabled={flipping}
+                className={`py-4 rounded-xl font-bold text-lg transition-all ${
+                  selectedSide === 'tails'
+                    ? 'bg-gradient-to-br from-red-800 to-red-600 text-white scale-[1.02] shadow-lg shadow-red-900/40'
+                    : 'bg-[#23232a] text-gray-400 hover:bg-[#2a2a32]'
+                } disabled:opacity-50`}
+              >
+                🔴 Tails
+              </button>
             </div>
-          ))}
+          </div>
+
+          {/* Bet Amount */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-400 text-sm">Aposta</span>
+              <span className="text-gray-500 text-xs">Saldo: {balance.toLocaleString()}</span>
+            </div>
+            <input
+              type="number"
+              value={betAmount}
+              onChange={(e) => setBetAmount(Math.max(1, parseInt(e.target.value) || 0))}
+              disabled={flipping}
+              className="w-full bg-[#23232a] text-white px-4 py-3 rounded-xl border border-[#33333a] focus:outline-none focus:ring-2 focus:ring-yellow-600/50 text-lg font-bold tabular-nums"
+            />
+            <div className="flex gap-1.5 mt-2 flex-wrap">
+              {BET_PRESETS.map((preset) => (
+                <button
+                  key={preset}
+                  onClick={() => setBetAmount(preset)}
+                  disabled={flipping}
+                  className="px-3 py-1.5 bg-[#23232a] hover:bg-[#2a2a32] rounded-lg text-xs text-gray-300 font-medium transition-colors disabled:opacity-50"
+                >
+                  {preset >= 1000 ? `${preset / 1000}k` : preset}
+                </button>
+              ))}
+              <button
+                onClick={() => setBetAmount(Math.floor(betAmount / 2))}
+                disabled={flipping}
+                className="px-3 py-1.5 bg-[#23232a] hover:bg-[#2a2a32] rounded-lg text-xs text-gray-300 font-medium disabled:opacity-50"
+              >
+                1/2
+              </button>
+              <button
+                onClick={() => setBetAmount(betAmount * 2)}
+                disabled={flipping}
+                className="px-3 py-1.5 bg-[#23232a] hover:bg-[#2a2a32] rounded-lg text-xs text-gray-300 font-medium disabled:opacity-50"
+              >
+                2x
+              </button>
+            </div>
+          </div>
+
+          {/* Potential Win */}
+          <div className="flex justify-between bg-[#23232a] rounded-xl px-4 py-3">
+            <span className="text-gray-400">Ganho potencial</span>
+            <span className="text-green-400 font-bold">{(betAmount * 2).toLocaleString()}</span>
+          </div>
+
+          {/* Flip Button */}
+          <button
+            onClick={handleFlip}
+            disabled={flipping || betAmount <= 0 || betAmount > balance}
+            className="w-full py-4 bg-gradient-to-r from-[#8A0000] to-[#cc0000] hover:from-[#aa0000] hover:to-[#ee2222] text-white font-bold text-xl rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#8A0000]/30 hover:shadow-[#8A0000]/50 hover:scale-[1.02] active:scale-[0.98]"
+          >
+            {flipping ? 'Girando...' : 'Flip!'}
+          </button>
         </div>
+
+        {/* History */}
+        {history.length > 0 && (
+          <div className="w-full max-w-md mt-6">
+            <p className="text-gray-500 text-sm mb-2">Historico</p>
+            <div className="flex gap-2 flex-wrap">
+              {history.map((h, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-lg border-2 ${
+                    h.won
+                      ? 'border-green-500 bg-green-900/20'
+                      : 'border-red-500 bg-red-900/20'
+                  }`}
+                >
+                  {h.result === 'heads' ? '🟡' : '🔴'}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );
-};
-
-export default CoinflipPage;
+}

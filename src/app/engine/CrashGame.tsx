@@ -56,5 +56,5 @@ export default function PhaserGame({ onReady }: { onReady?: (game: Phaser.Game) 
         }
     };
     window.onresize = () => window.sizeChanged();
-    return <div id="phaser-container" className='w-[600px] h-[768px]' />;
+    return <div id="phaser-container" className='w-full h-full' />;
 }

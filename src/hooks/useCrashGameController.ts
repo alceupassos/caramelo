@@ -32,12 +32,20 @@ export function useGameController() {
     gameRef.current?.scene.getScene('MainScene').events.emit('escape', avatar);
   }, []);
 
+  const updateMultiplier = useCallback((multiplier: number) => {
+    const scene = gameRef.current?.scene.getScene('MainScene');
+    if (scene) {
+      (scene as any).updateMultiplier?.(multiplier);
+    }
+  }, []);
+
   return {
     setGameInstance,
     startGame,
     triggerCrash,
     triggerLaunch,
     triggerEscape,
+    updateMultiplier,
     score,
     crashed,
   };

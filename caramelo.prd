@@ -1,0 +1,458 @@
+# Caramelo Casino
+
+### Plataforma Multi-Jogos Web3 — O Casino Mais Viciante da Web
+
+---
+
+## 1. Visão do Produto
+
+O **Caramelo Casino** é uma plataforma de casino Web3 multi-jogos com gráficos de qualidade AAA, projetada para oferecer a experiência mais envolvente e viciante do ecossistema Web3.
+
+A plataforma oferece **5 jogos completos** — Crash (Foguete), Tigrinho (Slot Machine), Coinflip, Mines e Dice — todos rodando em WebGL via Phaser.js com animações cinematográficas, partículas e áudio imersivo.
+
+### Princípios Fundamentais
+
+| Princípio | Descrição |
+|-----------|-----------|
+| **Acessibilidade Zero-Friction** | Créditos fictícios (5M iniciais) permitem jogar imediatamente, sem carteira, sem depósito |
+| **Switch Instantâneo para SOL** | Uma única variável de ambiente alterna todo o sistema de créditos fictícios para Solana real |
+| **Provably Fair** | RNG auditável via SHA-256 — qualquer jogador verifica qualquer resultado |
+| **Engajamento Profundo** | XP, níveis, conquistas, streaks diários e leaderboard global mantêm o jogador voltando |
+| **Performance AAA** | 60 FPS garantidos em desktop e mobile, WebGL otimizado, < 200ms de latência |
+
+---
+
+## 2. Stack Técnica
+
+### Frontend & Aplicação
+
+| Camada | Tecnologia | Versão |
+|--------|-----------|--------|
+| Framework | Next.js (App Router) | 15 |
+| UI Library | React | 19 |
+| Linguagem | TypeScript | 5.x |
+| Game Engine | Phaser.js (WebGL) | 3.90 |
+| UI Components | HeroUI + Tailwind CSS | — |
+| Animações | Framer Motion + Phaser Particles | — |
+| Áudio | Phaser Sound Manager | — |
+| State Management | React Context + TanStack Query | — |
+| Real-time | WebSocket nativo | — |
+
+### Blockchain & Auth
+
+| Camada | Tecnologia |
+|--------|-----------|
+| Blockchain | Solana (Web3.js) |
+| Autenticação | Privy.io |
+| Rede | Devnet (desenvolvimento) / Mainnet (produção) |
+
+### Tema Visual
+
+- **Dark theme** com neon glow estilo casino
+- **Paleta primária**: `#8A0000` (vermelho profundo) + dourado accent
+- **Glassmorphism** nos cards e modais
+- **Mobile-first** responsive com touch controls nativos
+- Loading skeletons em todos os estados de carregamento
+
+---
+
+## 3. Jogos
+
+### 3.1 Crash Game (Foguete)
+
+Um foguete decola com um multiplicador crescente de `1.00x` até o infinito. O jogador deve escapar (cashout) antes que o foguete exploda. Quanto mais espera, maior o multiplicador — mas se o foguete crashar antes do cashout, perde tudo.
+
+**Mecânicas principais:**
+
+- Multiplicador cresce exponencialmente em tempo real
+- Cashout manual a qualquer momento
+- Último jogador a escapar antes do crash recebe bônus adicional
+- Multiplayer real-time via WebSocket — todos veem o mesmo foguete
+
+**Efeitos visuais:**
+
+| Fase | Efeito |
+|------|--------|
+| Decolagem | Trail de partículas com glow crescente |
+| Ascensão | Vibração progressiva da câmera, partículas se intensificam |
+| Zona de perigo | Tint vermelho gradual no foguete e no fundo |
+| Crash | Explosão com camera shake, debris particles, flash branco |
+| Cashout | Confetti dourado, SFX de vitória, número do multiplicador pulsa |
+
+---
+
+### 3.2 Tigrinho (Slot Machine)
+
+Slot machine premium com 5 reels e 3 linhas visíveis, 20 paylines e features completas de free spins e wilds.
+
+**Configuração dos reels:**
+
+- **5 reels × 3 linhas** visíveis (15 símbolos na tela)
+- **20 paylines**: horizontais, diagonais e zigzag
+
+**Tabela de símbolos:**
+
+| Símbolo | Tipo | Função |
+|---------|------|--------|
+| Tigre | Wild | Substitui qualquer símbolo (exceto Scatter) |
+| Diamante | Premium | Maior pagamento regular |
+| Trevo | Premium | Segundo maior pagamento |
+| Moeda | Regular | Pagamento médio |
+| Estrela | Regular | Pagamento base |
+| Scatter | Especial | 3+ ativam Free Spins |
+
+**Features:**
+
+- **Free Spins**: 3+ Scatters ativam 10 rodadas grátis
+- **Wild Substitution**: Tigre substitui qualquer símbolo regular
+- **Cascade Stop Animation**: Reels param sequencialmente com bounce
+- **Win Highlights**: Paylines vencedoras piscam com glow
+- **Big Win**: Partículas douradas, moedas caindo, multiplicador gigante na tela
+- **Auto-play**: Configurável com limites de perda, ganho e número de rodadas
+
+---
+
+### 3.3 Coinflip
+
+Aposta binária simples — escolha Purple ou Gray e veja a moeda girar.
+
+**Mecânicas:**
+
+- Escolha entre Purple ou Gray
+- Animação 3D CSS da moeda girando com physics realista
+- Resultado determinado por RNG Provably Fair
+- Modo multiplayer: crie uma sala ou entre em um jogo existente
+- Histórico visual das últimas rodadas (streak indicator)
+
+---
+
+### 3.4 Mines
+
+Grid de 5×5 com minas escondidas. Revele tiles seguros para acumular multiplicador — ou pare e faça cashout a qualquer momento.
+
+**Mecânicas:**
+
+- Grid **5×5** (25 tiles)
+- **1 a 24 minas** configuráveis pelo jogador
+- Cada tile seguro revelado aumenta o multiplicador
+- Cashout disponível a qualquer momento
+- Mais minas = multiplicador sobe mais rápido, mas risco maior
+
+**Tabela de multiplicadores (exemplos):**
+
+| Minas | 1 tile seguro | 5 tiles seguros | 10 tiles seguros |
+|-------|--------------|-----------------|------------------|
+| 1 | 1.04x | 1.22x | 1.52x |
+| 3 | 1.14x | 1.88x | 4.27x |
+| 5 | 1.25x | 2.98x | 12.47x |
+| 10 | 1.67x | 10.61x | 253.00x |
+| 24 | 25.00x | — | — |
+
+**Visual:**
+
+| Estado | Aparência |
+|--------|-----------|
+| Coberto | Tile escuro com brilho sutil ao hover |
+| Seguro | Diamante azul com partículas de brilho |
+| Mina | Bomba vermelha com explosão e shake |
+
+---
+
+### 3.5 Dice
+
+Jogo de dado com slider para definir o target. Quanto menor o target, maior o multiplicador, menor a chance de ganhar.
+
+**Mecânicas:**
+
+- Slider para escolher **Roll Under** (2 a 98)
+- Multiplicador calculado: `(100 / target) × 0.98`
+- Chance de ganhar = `target%`
+- Dado 3D animado com resultado visual
+
+**Exemplos de configuração:**
+
+| Target (Roll Under) | Chance | Multiplicador |
+|---------------------|--------|---------------|
+| 50 | 50% | 1.96x |
+| 25 | 25% | 3.92x |
+| 10 | 10% | 9.80x |
+| 5 | 5% | 19.60x |
+| 2 | 2% | 49.00x |
+
+---
+
+## 4. Sistema de Créditos
+
+### Modo Créditos Fictícios (padrão)
+
+| Parâmetro | Valor |
+|-----------|-------|
+| Créditos iniciais | 5.000.000 |
+| Bônus diário | +500 créditos |
+| Recarga ao zerar | Gratuita (opcional, configurável) |
+| Histórico | 50 últimas transações (armazenamento local) |
+| Valor real | Nenhum — puramente recreativo |
+
+### Modo SOL (produção)
+
+Alternar para Solana real requer apenas **uma variável de ambiente**:
+
+```
+NEXT_PUBLIC_CURRENCY_MODE=SOL
+```
+
+Quando ativado:
+
+- Saldo lido diretamente da carteira Solana do jogador
+- Transações on-chain via Solana Web3.js
+- Depósitos e saques reais
+- Mesma interface, mesma lógica de jogos
+
+---
+
+## 5. Sistema de Engajamento
+
+### 5.1 Sistema de XP
+
+| Ação | XP Ganho |
+|------|----------|
+| Aposta realizada | 1 XP por crédito apostado |
+| Vitória | 5 XP + 10% do valor ganho |
+| Login diário | 50 XP |
+| Completar conquista | Variável (50-500 XP) |
+
+### 5.2 Níveis
+
+- **100 níveis** progressivos
+- Cada nível requer XP exponencialmente maior
+- Desbloqueia perks exclusivos: avatares, bordas de perfil, emojis no chat, títulos
+
+### 5.3 Conquistas
+
+20+ achievements com recompensas em créditos:
+
+| Conquista | Condição | Recompensa |
+|-----------|---------|------------|
+| First Victory | Primeira vitória em qualquer jogo | 1.000 créditos |
+| High Roller | Apostar 100.000+ de uma vez | 5.000 créditos |
+| Crash Survivor | Cashout acima de 10x no Crash | 10.000 créditos |
+| Lucky Seven | Ganhar 7 vezes seguidas | 7.777 créditos |
+| Tigrinho Master | Ativar Free Spins 10 vezes | 15.000 créditos |
+| Mine Sweeper | Revelar 20 tiles seguros em Mines | 20.000 créditos |
+| Dice God | Acertar Roll Under 5 | 25.000 créditos |
+| Streak Lord | Manter 30 dias de streak | 50.000 créditos |
+| All In | Apostar todo o saldo e ganhar | 100.000 créditos |
+| Centurion | Alcançar nível 100 | 500.000 créditos |
+
+### 5.4 Daily Streak
+
+| Streak | Bônus |
+|--------|-------|
+| 3 dias consecutivos | 1.2x no bônus diário |
+| 7 dias consecutivos | 1.5x no bônus diário |
+| 14 dias consecutivos | 2.0x no bônus diário |
+| 30 dias consecutivos | 3.0x no bônus diário + conquista |
+
+### 5.5 Leaderboard
+
+- **Diário**: Reset todo dia à meia-noite UTC
+- **Semanal**: Reset toda segunda-feira
+- **All-time**: Ranking permanente
+- Métricas: total ganho, maior multiplicador, maior sequência de vitórias
+
+---
+
+## 6. Padrões de Engajamento (Game Design)
+
+| Técnica | Implementação |
+|---------|--------------|
+| **Near-miss feedback** | Animação especial quando o resultado fica a 1 símbolo de ganhar (Tigrinho), ou 0.1x do cashout (Crash) |
+| **Variable reward schedule** | Bônus aleatórios aparecem sem padrão previsível — mantém o jogador atento |
+| **Social proof** | Feed lateral: "JogadorX ganhou 50.000 créditos no Crash agora!" |
+| **Loss aversion** | Mostra quanto o jogador teria ganho se tivesse esperado mais (Crash) ou revelado mais (Mines) |
+| **Streak rewards** | Recompensas crescentes por dias consecutivos de login |
+| **Sound design** | Música ambiente loopada por jogo, SFX único para cada ação (aposta, vitória, derrota, cashout, level up) |
+| **Haptic feedback** | Vibração no mobile em momentos-chave (vitória, explosão, big win) |
+| **Progress visibility** | Barra de XP sempre visível, progresso para próximo nível e próxima conquista |
+
+---
+
+## 7. Segurança & Provably Fair
+
+### Algoritmo RNG
+
+```
+resultado = SHA-256(serverSeed + clientSeed + nonce)
+```
+
+### Fluxo de Verificação
+
+1. **Antes do jogo**: servidor publica o hash do server seed (`SHA-256(serverSeed)`)
+2. **Durante o jogo**: jogador fornece client seed (ou usa o gerado automaticamente)
+3. **Após o resultado**: servidor revela o server seed original
+4. **Verificação**: qualquer pessoa pode aplicar `SHA-256(serverSeed)` e confirmar que o hash confere
+
+### Transparência
+
+| Parâmetro | Valor |
+|-----------|-------|
+| House edge | 2% (fixo e transparente) |
+| RNG | Provably Fair via SHA-256 |
+| Server seed | Revelado após cada rodada |
+| Client seed | Personalizável pelo jogador |
+| Nonce | Incrementado a cada rodada |
+| Verificação | Página pública de verificação disponível para todos |
+
+---
+
+## 8. UX/UI
+
+### Design System
+
+| Elemento | Especificação |
+|----------|--------------|
+| Tema | Dark com neon glow |
+| Cor primária | `#8A0000` (vermelho profundo) |
+| Cor accent | Dourado (`#FFD700`) |
+| Cards | Glassmorphism (blur + transparência) |
+| Tipografia | Sans-serif moderna, pesos bold em números |
+| Ícones | Lucide ou similar, estilo outline |
+| Bordas | Radius generoso, glow sutil nos elementos interativos |
+
+### Responsividade
+
+- **Mobile-first**: toda a interface é desenhada para telas pequenas primeiro
+- **Touch controls**: botões grandes, gestos de swipe, áreas de toque generosas
+- **Breakpoints**: 320px → 768px → 1024px → 1440px
+- **Orientação**: Portrait principal, landscape suportado
+
+### Animações & Transições
+
+- **Framer Motion** em todas as transições de página e componentes
+- **Phaser Particles** dentro dos jogos (explosões, confetti, brilhos)
+- **Loading skeletons** em todos os estados de carregamento
+- **Micro-interações**: hover, click, toggle — tudo com feedback visual
+
+---
+
+## 9. Variáveis de Ambiente
+
+```env
+# API & Servidor
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+SOCKET_URL=ws://localhost:3001
+
+# Autenticação (Privy)
+NEXT_PUBLIC_PRIVY_APP_ID=
+NEXT_PUBLIC_PRIVY_CLIENT_ID=
+
+# Blockchain (Solana)
+NEXT_PUBLIC_SOLANA_NETWORK=devnet
+NEXT_PUBLIC_SOLANA_RPC_URL=https://api.devnet.solana.com
+
+# Sistema de Créditos
+NEXT_PUBLIC_CURRENCY_MODE=CREDITS
+NEXT_PUBLIC_INITIAL_CREDITS=5000000
+NEXT_PUBLIC_DAILY_BONUS=500
+NEXT_PUBLIC_HOUSE_EDGE=0.02
+
+# Modo Offline
+OFFLINE=false
+
+# Storage (Pinata/IPFS)
+PINATA_JWT=
+```
+
+---
+
+## 10. Arquitetura de Diretórios
+
+```
+src/
+├── app/                        # Next.js App Router — páginas e rotas
+│   ├── crash/                  # Página do Crash Game
+│   ├── tigrinho/               # Página do Tigrinho (Slot)
+│   ├── coinflip/               # Página do Coinflip
+│   ├── mines/                  # Página do Mines
+│   ├── dice/                   # Página do Dice
+│   ├── profile/                # Perfil do jogador (XP, conquistas, histórico)
+│   ├── api/                    # API routes (Next.js serverless)
+│   └── engine/                 # Wrappers React ↔ Phaser
+│
+├── phaser/                     # Phaser.js — lógica dos jogos em WebGL
+│   ├── scenes/                 # Cenas de cada jogo (CrashScene, TigrinhoScene...)
+│   ├── audio/                  # Audio Manager (música, SFX)
+│   └── particles/              # Sistemas de partículas reutilizáveis
+│
+├── components/                 # Componentes React reutilizáveis
+│   ├── layout/                 # Navbar, Sidebar, Footer
+│   ├── animations/             # Componentes de vitória, derrota, confetti
+│   ├── engagement/             # Barra de XP, streak indicator, level badge
+│   ├── leaderboard/            # Tabelas de ranking
+│   ├── wallet/                 # Saldo de créditos, botão de depósito
+│   └── modal/                  # Modais de jogo, resultado, configuração
+│
+├── contexts/                   # React Contexts (auth, créditos, jogos)
+├── hooks/                      # Custom hooks (useCredits, useGame, useXP...)
+├── types/                      # TypeScript types e interfaces
+├── utils/                      # Utilitários (RNG, formatação, haptics, axios)
+└── providers/                  # Provider stack (Privy, Query, Theme...)
+```
+
+---
+
+## 11. Métricas de Sucesso
+
+| Métrica | Target |
+|---------|--------|
+| FPS (desktop + mobile) | 60 FPS constantes |
+| Sessão média | > 15 minutos |
+| DAU return rate | > 40% |
+| Jogos por sessão | > 10 |
+| Latência WebSocket | < 200ms |
+| Time to first game | < 5 segundos (créditos fictícios, sem login) |
+| Crash rate | < 0.1% |
+| Lighthouse Performance Score | > 90 |
+
+---
+
+## 12. Roadmap
+
+### Fase 1 — Fundação
+
+- Setup do projeto Next.js 15 + TypeScript + Tailwind + HeroUI
+- Motor de jogo Phaser.js integrado com React
+- Sistema de créditos fictícios completo
+- Crash Game funcional com multiplayer WebSocket
+- Geração de assets com IA (sprites, backgrounds, UI)
+- Dark theme casino com glassmorphism
+
+### Fase 2 — Expansão
+
+- Tigrinho (Slot Machine) com Free Spins e Auto-play
+- Mines com grid interativo e cashout progressivo
+- Dice com slider e dado 3D
+- Coinflip com animação 3D e modo multiplayer
+- Sistema de áudio completo (música + SFX por jogo)
+
+### Fase 3 — Engajamento
+
+- Sistema de XP e níveis (1-100)
+- 20+ conquistas com recompensas
+- Daily streak com multiplicadores crescentes
+- Leaderboard diário, semanal e all-time
+- Feed de atividade social em tempo real
+- Near-miss feedback e variable reward schedule
+
+### Fase 4 — Produção
+
+- Provably Fair RNG com verificação pública
+- Integração Privy.io para autenticação Web3
+- Switch para SOL (Solana real)
+- Deploy em produção (Vercel + servidor WebSocket)
+- Testes de carga e otimização de performance
+- Auditoria de segurança
+
+---
+
+> **Caramelo Casino** — Onde cada aposta conta, cada nível importa, e cada sessão vicia.
