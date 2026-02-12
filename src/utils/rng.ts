@@ -40,7 +40,7 @@ export class ProvablyFairRNG {
 
   static async hashServerSeed(seed: string): Promise<string> {
     const data = new TextEncoder().encode(seed);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data.buffer as ArrayBuffer);
     return bufferToHex(hashBuffer);
   }
 
@@ -51,7 +51,7 @@ export class ProvablyFairRNG {
   ): Promise<number> {
     const message = `${serverSeed}:${clientSeed}:${nonce}`;
     const data = new TextEncoder().encode(message);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data.buffer as ArrayBuffer);
     const hex = bufferToHex(hashBuffer);
     return parseInt(hex.substring(0, 8), 16) / 0xffffffff;
   }

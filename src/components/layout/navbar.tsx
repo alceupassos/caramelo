@@ -2,11 +2,14 @@
 import Link from "next/link";
 import { XIcon } from "../icos/svg";
 import { DiscordLogoIcon } from "@radix-ui/react-icons";
-import WalletConnectModal from "../modal/walletConnectModal";
+import dynamic from "next/dynamic";
 import { CreditBalance } from "../wallet/CreditBalance";
 import { XPBar } from "../engagement/XPBar";
 import { StreakIndicator } from "../engagement/StreakIndicator";
 import { useState } from "react";
+
+const WalletConnectModal = dynamic(() => import("../modal/walletConnectModal"), { ssr: false });
+const PRIVY_CONFIGURED = !!process.env.NEXT_PUBLIC_PRIVY_APP_ID;
 
 const games = [
     { name: 'Crash', href: '/crash', emoji: '🚀' },
@@ -64,7 +67,7 @@ const Navbar = () => {
                 {/* Right side */}
                 <div className="flex items-center gap-3">
                     <CreditBalance />
-                    <WalletConnectModal />
+                    {PRIVY_CONFIGURED && <WalletConnectModal />}
 
                     {/* Mobile hamburger */}
                     <button

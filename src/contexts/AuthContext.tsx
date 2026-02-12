@@ -37,10 +37,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const network = process.env.NEXT_PUBLIC_NETWORK || "devnet"
 
+const defaultAuthContext: AuthContextType = {
+  userProfile: null,
+  updateUser: () => {},
+  loading: false,
+  setLoading: () => {},
+  balance: 0,
+  fetchingBalance: false,
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    return defaultAuthContext;
   }
   return context;
 };

@@ -1,22 +1,39 @@
 'use client'
-import React, { useMemo } from "react";
+import React from "react";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
-import AuthDebug from "@/components/auth/AuthDebug";
 import ContextProvider from "./contextprovider";
 import { PrivyProvider } from "@privy-io/react-auth";
 import { ModalProvider } from "@/contexts/modalContext";
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import {toSolanaWalletConnectors} from "@privy-io/react-auth/solana";
 
+const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID || "";
+const PRIVY_CLIENT_ID = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID;
+
+const InnerApp = ({ children }: { children: React.ReactNode }) => {
+    return (
+        <HeroUIProvider>
+            <ContextProvider>
+                <ModalProvider>
+                    <main className="dark text-foreground bg-background">
+                        <ToastProvider placement="top-right" />
+                        {children}
+                    </main>
+                </ModalProvider>
+            </ContextProvider>
+        </HeroUIProvider>
+    );
+};
+
 const Provider = ({ children }: any) => {
-    const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID
-    const clientId = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID
-    const phantom = new PhantomWalletAdapter();
+    // Privy requires a valid app ID - skip it entirely if not configured
+    if (!PRIVY_APP_ID) {
+        return <InnerApp>{children}</InnerApp>;
+    }
 
     return (
         <PrivyProvider
-            appId={appId ?? ""}
-            clientId={clientId}
+            appId={PRIVY_APP_ID}
+            clientId={PRIVY_CLIENT_ID}
             config={{
                 "appearance": {
                     "accentColor": "#8A0000",
@@ -41,22 +58,11 @@ const Provider = ({ children }: any) => {
                     }
                 },
                 externalWallets: {solana: {connectors: toSolanaWalletConnectors()}}
-                
             }}
         >
-            <HeroUIProvider >
-                <ContextProvider>
-                    <ModalProvider>
-                        <main className="dark text-foreground bg-background">
-                            <ToastProvider placement="top-right" />
-                            {children}
-                            {/* <AuthDebug /> */}
-                        </main>
-                    </ModalProvider>
-                </ContextProvider>
-            </HeroUIProvider>
-        </PrivyProvider >
-    )
+            <InnerApp>{children}</InnerApp>
+        </PrivyProvider>
+    );
 }
 
 export default Provider;
