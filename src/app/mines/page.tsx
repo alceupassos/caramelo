@@ -109,7 +109,13 @@ export default function MinesPage() {
       <div className="flex flex-col lg:flex-row gap-4 p-4 max-w-6xl mx-auto">
         {/* Game Grid */}
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-white mb-4">Mines</h1>
+          <div className="flex items-center gap-3 mb-4">
+            <img src="/icone.png" alt="Caramelo" className="w-10 h-10 rounded-full" />
+            <h1 className="text-2xl font-bold text-white">Mines</h1>
+          </div>
+          <div className="bg-black/40 rounded-lg px-3 py-2 border border-white/5 text-xs text-gray-400 mb-4">
+            <span className="text-yellow-400 font-bold">Como jogar:</span> Defina a aposta e o numero de minas. Clique nos blocos para revelar. Cada bloco seguro aumenta o multiplicador. Clique em Retirar antes de explodir!
+          </div>
           <div className="grid grid-cols-5 gap-2 max-w-[500px] mx-auto">
             {grid.map((tile, i) => (
               <button
@@ -136,7 +142,7 @@ export default function MinesPage() {
           {/* Game over message */}
           {gameOver && (
             <div className={`text-center mt-4 text-2xl font-bold ${won ? 'text-emerald-400' : 'text-red-400'}`}>
-              {won ? `+${Math.floor(betAmount * currentMultiplier).toLocaleString()} creditos!` : 'BOOM!'}
+              {won ? `+${Math.floor(betAmount * currentMultiplier).toLocaleString()} creditos!` : 'BOOM! Explodiu!'}
             </div>
           )}
         </div>
@@ -192,7 +198,7 @@ export default function MinesPage() {
           {gameActive && (
             <>
               <div className="mb-4 text-center">
-                <div className="text-gray-400 text-sm">Multiplicador</div>
+                <div className="text-gray-400 text-sm">Multiplicador atual</div>
                 <div className="text-3xl font-bold text-yellow-400">{currentMultiplier.toFixed(2)}x</div>
               </div>
               <div className="mb-4 text-center">
@@ -206,7 +212,7 @@ export default function MinesPage() {
                 disabled={revealedCount === 0}
                 className="w-full py-3 bg-gradient-to-r from-emerald-700 to-emerald-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-emerald-400 disabled:opacity-50 transition-all text-lg"
               >
-                Cashout {currentMultiplier.toFixed(2)}x
+                Retirar {currentMultiplier.toFixed(2)}x
               </button>
             </>
           )}

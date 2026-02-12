@@ -66,7 +66,13 @@ export default function CoinflipPage() {
             </span>
           </h1>
           <p className="text-gray-400">Escolha um lado, 49% de chance de ganhar 2x</p>
+          <div className="mt-3 bg-black/40 rounded-lg px-3 py-2 border border-white/5 text-xs text-gray-400 inline-block">
+            <span className="text-yellow-400 font-bold">Como jogar:</span> Escolha Cara ou Coroa, defina sua aposta e clique em Flip! Se acertar, ganha 2x.
+          </div>
         </div>
+
+        {/* Mascot */}
+        <img src="/icone.png" alt="Caramelo" className="fixed bottom-4 right-4 w-14 h-14 rounded-full opacity-50 z-10 hidden lg:block" />
 
         {/* Coin Animation */}
         <div className="mb-8">
@@ -90,7 +96,7 @@ export default function CoinflipPage() {
                 {lastResult.won ? `+${lastResult.amount.toLocaleString()}` : `-${lastResult.amount.toLocaleString()}`}
               </p>
               <p className="text-sm opacity-70">
-                {lastResult.won ? 'Voce ganhou!' : 'Tente novamente'}
+                {lastResult.won ? 'Voce ganhou!' : 'Tente de novo!'}
               </p>
             </motion.div>
           )}
@@ -111,7 +117,7 @@ export default function CoinflipPage() {
                     : 'bg-[#23232a] text-gray-400 hover:bg-[#2a2a32]'
                 } disabled:opacity-50`}
               >
-                🟡 Heads
+                🟡 Cara
               </button>
               <button
                 onClick={() => setSelectedSide('tails')}
@@ -122,7 +128,7 @@ export default function CoinflipPage() {
                     : 'bg-[#23232a] text-gray-400 hover:bg-[#2a2a32]'
                 } disabled:opacity-50`}
               >
-                🔴 Tails
+                🔴 Coroa
               </button>
             </div>
           </div>
@@ -188,6 +194,7 @@ export default function CoinflipPage() {
         {history.length > 0 && (
           <div className="w-full max-w-md mt-6">
             <p className="text-gray-500 text-sm mb-2">Historico</p>
+            <img src="/icone.png" alt="Caramelo" className="absolute bottom-2 left-2 w-10 h-10 rounded-full opacity-40 lg:hidden" />
             <div className="flex gap-2 flex-wrap">
               {history.map((h, i) => (
                 <motion.div

@@ -48,7 +48,13 @@ export default function DicePage() {
       <div className="flex flex-col lg:flex-row gap-4 p-4 max-w-6xl mx-auto">
         {/* Main game area */}
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-white mb-6">Dice</h1>
+          <div className="flex items-center gap-3 mb-4">
+            <img src="/icone.png" alt="Caramelo" className="w-10 h-10 rounded-full" />
+            <h1 className="text-2xl font-bold text-white">Dice</h1>
+          </div>
+          <div className="bg-black/40 rounded-lg px-3 py-2 border border-white/5 text-xs text-gray-400 mb-4">
+            <span className="text-yellow-400 font-bold">Como jogar:</span> Escolha um numero com o slider. Se o dado rolar abaixo do seu numero, voce ganha! Quanto menor o numero, maior o multiplicador.
+          </div>
 
           {/* Result display */}
           <div className="bg-black/60 backdrop-blur rounded-2xl p-8 border border-gray-800 mb-6 text-center">
@@ -74,7 +80,7 @@ export default function DicePage() {
                     {result}
                   </div>
                   <div className={`text-2xl mt-2 ${won ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {won ? `+${Math.floor(betAmount * multiplier).toLocaleString()} creditos!` : 'Perdeu!'}
+                    {won ? `+${Math.floor(betAmount * multiplier).toLocaleString()} creditos!` : 'Nao foi dessa vez!'}
                   </div>
                 </motion.div>
               ) : (
@@ -86,7 +92,7 @@ export default function DicePage() {
           {/* Slider */}
           <div className="bg-black/40 rounded-xl p-6 border border-gray-800">
             <div className="flex justify-between text-sm text-gray-400 mb-2">
-              <span>Roll Under</span>
+              <span>Rolar Abaixo de</span>
               <span className="text-white font-bold text-lg">{rollUnder}</span>
             </div>
 

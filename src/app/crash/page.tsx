@@ -373,13 +373,17 @@ const Crash = () => {
 
                 </div>
                 <div className="flex flex-col w-full bg-opacity-15 flex-1 md:flex-row">
-                    <div className='relative w-[600px]'>
-                        <div className="relative">
+                    <div className='relative w-full md:w-[50%] lg:w-[55%] min-h-[300px] md:min-h-[500px]'>
+                        <div className="relative h-full">
                             <PhaserGame onReady={setGameInstance} />
                         </div>
                     </div>
                     <div className='flex-1 flex gap-2 '>
                         <div className='max-w-[400px] shrink-0 w-full flex flex-col gap-2 px-4 py-2 '>
+                            {/* Como jogar */}
+                            <div className='bg-black/40 rounded-lg px-3 py-2 border border-white/5 text-xs text-gray-400'>
+                                <span className='text-yellow-400 font-bold'>Como jogar:</span> Entre antes do lancamento. O foguete sobe e o multiplicador aumenta. Clique em Escapar antes que exploda para ganhar!
+                            </div>
                             <div className='h-[240px] relative bg-linear-to-br from-violet-500 to-fuchsia-500 rounded-xl content-center flex items-center justify-center'>
                                 {launchAt ? <Countdown time={launchAt} />
                                     :
@@ -387,6 +391,7 @@ const Crash = () => {
                                         <Loader />
                                 }
                                 <p className='absolute left-1/2 -translate-x-1/2 top-1 animate-bounce'>{game?.status}</p>
+                                <img src="/icone.png" alt="Caramelo" className="absolute bottom-2 right-2 w-10 h-10 rounded-full opacity-60" />
                             </div>
 
                             <div>
@@ -410,7 +415,7 @@ const Crash = () => {
                                 <div className='w-full justify-between flex px-2'>
                                     <div className="text-primary flex items-center justify-center gap-2">
                                         <FaUser size={14} />
-                                        <p className='text-white'>{joinedUser.length} Playsers</p>
+                                        <p className='text-white'>{joinedUser.length} Jogadores</p>
                                     </div>
                                     <p>
                                         Round <span className='text-xl text-primary'>#</span><span>{game?.round}</span>

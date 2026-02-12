@@ -19,7 +19,7 @@ interface SymbolDef {
 }
 
 const SYMBOLS: SymbolDef[] = [
-  { key: 'sym_tiger', name: 'Tiger', emoji: '\uD83D\uDC2F', type: 'wild', color: 0xFF8C00, multiplier: { 3: 10, 4: 25, 5: 100 }, weight: 2 },
+  { key: 'sym_tiger', name: 'Caramelo', emoji: '\uD83D\uDC15', type: 'wild', color: 0xFF8C00, multiplier: { 3: 10, 4: 25, 5: 100 }, weight: 2 },
   { key: 'sym_diamond', name: 'Diamond', emoji: '\uD83D\uDC8E', type: 'premium', color: 0x00BFFF, multiplier: { 3: 5, 4: 15, 5: 50 }, weight: 4 },
   { key: 'sym_clover', name: 'Clover', emoji: '\uD83C\uDF40', type: 'premium', color: 0x32CD32, multiplier: { 3: 4, 4: 12, 5: 40 }, weight: 5 },
   { key: 'sym_coin', name: 'Coin', emoji: '\uD83D\uDCB0', type: 'regular', color: 0xFFD700, multiplier: { 3: 3, 4: 8, 5: 25 }, weight: 8 },
@@ -101,7 +101,7 @@ export default class TigrinhoScene extends Phaser.Scene {
     ).setStrokeStyle(3, 0xFFD700);
 
     // Title
-    this.titleText = this.add.text(width / 2, this.reelAreaY - 50, 'TIGRINHO', {
+    this.titleText = this.add.text(width / 2, this.reelAreaY - 50, 'CARAMELINHO', {
       fontSize: '42px',
       fontFamily: 'monospace',
       color: '#FFD700',

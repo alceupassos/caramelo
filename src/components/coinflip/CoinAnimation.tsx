@@ -51,7 +51,7 @@ const CoinAnimation = ({ flipping, result, onComplete }: CoinAnimationProps) => 
         >
           <div className="flex flex-col items-center">
             <span className="text-5xl sm:text-6xl">🟡</span>
-            <span className="text-sm font-bold text-yellow-900 mt-1 tracking-wider">HEADS</span>
+            <span className="text-sm font-bold text-yellow-900 mt-1 tracking-wider">CARA</span>
           </div>
         </div>
 
@@ -66,7 +66,7 @@ const CoinAnimation = ({ flipping, result, onComplete }: CoinAnimationProps) => 
         >
           <div className="flex flex-col items-center">
             <span className="text-5xl sm:text-6xl">🔴</span>
-            <span className="text-sm font-bold text-red-200 mt-1 tracking-wider">TAILS</span>
+            <span className="text-sm font-bold text-red-200 mt-1 tracking-wider">COROA</span>
           </div>
         </div>
       </motion.div>

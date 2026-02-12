@@ -44,7 +44,7 @@ const Tigrinho = () => {
             const result = deductBet(betAmount, 'tigrinho');
             if (!result) {
                 addToast({
-                    title: 'Insufficient credits',
+                    title: 'Creditos insuficientes',
                     color: 'danger',
                     timeout: 3000,
                 });
@@ -63,7 +63,7 @@ const Tigrinho = () => {
             addWinnings(Math.round(lastWin), 'tigrinho');
             if (lastWin >= betAmount * 5) {
                 addToast({
-                    title: `BIG WIN! +${Math.round(lastWin).toLocaleString()} credits!`,
+                    title: `GRANDE VITORIA! +${Math.round(lastWin).toLocaleString()} creditos!`,
                     color: 'success',
                     timeout: 5000,
                 });
@@ -86,7 +86,7 @@ const Tigrinho = () => {
     useEffect(() => {
         if (freeSpinsLeft > 0 && !spinning) {
             addToast({
-                title: `Free Spins: ${freeSpinsLeft} remaining!`,
+                title: `Giros Gratis: ${freeSpinsLeft} restantes!`,
                 color: 'warning',
                 timeout: 3000,
             });
@@ -112,11 +112,14 @@ const Tigrinho = () => {
                 <div className="flex-1 relative min-h-[400px] lg:min-h-[500px] rounded-xl overflow-hidden border border-yellow-600/20 bg-[#0a0a1a]">
                     <TigrinhoGame onReady={setGameInstance} />
 
+                    {/* Caramelo mascot */}
+                    <img src="/icone.png" alt="Caramelo" className="absolute top-3 left-3 w-12 h-12 rounded-full z-10 border-2 border-yellow-600/50 shadow-lg" />
+
                     {/* Big Win Overlay */}
                     {bigWin && (
                         <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
                             <div className="text-6xl md:text-8xl font-black text-yellow-400 animate-bounce drop-shadow-[0_0_30px_rgba(255,215,0,0.8)]">
-                                BIG WIN!
+                                GRANDE VITORIA!
                             </div>
                         </div>
                     )}
@@ -125,7 +128,7 @@ const Tigrinho = () => {
                     {freeSpinsLeft > 0 && (
                         <div className="absolute top-4 right-4 bg-purple-600/90 backdrop-blur-sm px-4 py-2 rounded-full z-10">
                             <span className="text-white font-bold text-sm">
-                                Free Spins: {freeSpinsLeft}
+                                Giros Gratis: {freeSpinsLeft}
                             </span>
                         </div>
                     )}
@@ -133,18 +136,23 @@ const Tigrinho = () => {
 
                 {/* Controls Panel */}
                 <div className="w-full lg:w-[360px] shrink-0 flex flex-col gap-3">
+                    {/* Como jogar */}
+                    <div className="bg-black/40 rounded-lg px-3 py-2 border border-white/5 text-xs text-gray-400">
+                        <span className="text-yellow-400 font-bold">Como jogar:</span> Escolha o valor da aposta e clique em Girar. Combine simbolos iguais nas linhas para ganhar! 3+ estrelas = giros gratis.
+                    </div>
+
                     {/* Balance */}
                     <div className="bg-black/60 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-                        <p className="text-gray-400 text-sm">Balance</p>
+                        <p className="text-gray-400 text-sm">Saldo</p>
                         <p className="text-2xl font-bold text-white font-mono">
-                            {balance.toLocaleString()} <span className="text-sm text-gray-400">credits</span>
+                            {balance.toLocaleString()} <span className="text-sm text-gray-400">creditos</span>
                         </p>
                     </div>
 
                     {/* Last Win */}
                     {lastWin > 0 && (
                         <div className="bg-yellow-600/10 backdrop-blur-sm rounded-xl p-4 border border-yellow-600/30">
-                            <p className="text-yellow-400 text-sm">Last Win</p>
+                            <p className="text-yellow-400 text-sm">Ultimo Ganho</p>
                             <p className="text-2xl font-bold text-yellow-400 font-mono">
                                 +{Math.round(lastWin).toLocaleString()}
                             </p>
@@ -153,7 +161,7 @@ const Tigrinho = () => {
 
                     {/* Bet Controls */}
                     <div className="bg-black/60 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-                        <p className="text-gray-400 text-sm mb-2">Bet Amount</p>
+                        <p className="text-gray-400 text-sm mb-2">Valor da Aposta</p>
 
                         <div className="flex items-center gap-2 mb-3">
                             <button
@@ -235,7 +243,7 @@ const Tigrinho = () => {
                     >
                         <div className="flex items-center justify-center gap-2">
                             <FaPlay size={16} className={spinning ? 'animate-spin' : ''} />
-                            {spinning ? 'SPINNING...' : freeSpinsLeft > 0 ? `FREE SPIN (${freeSpinsLeft})` : 'SPIN'}
+                            {spinning ? 'GIRANDO...' : freeSpinsLeft > 0 ? `GIRO GRATIS (${freeSpinsLeft})` : 'GIRAR'}
                         </div>
                     </button>
 
@@ -250,7 +258,7 @@ const Tigrinho = () => {
                                 }
                             `}
                         >
-                            {autoPlay ? 'STOP AUTO' : 'AUTO PLAY'}
+                            {autoPlay ? 'PARAR AUTO' : 'AUTO GIRAR'}
                         </button>
 
                         <button
@@ -258,7 +266,7 @@ const Tigrinho = () => {
                             className="py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-colors flex items-center gap-2"
                         >
                             <FaCircleInfo size={14} />
-                            Paytable
+                            Premios
                         </button>
                     </div>
                 </div>
