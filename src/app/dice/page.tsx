@@ -50,7 +50,7 @@ export default function DicePage() {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-4">
             <img src="/icone.png" alt="Caramelo" className="w-10 h-10 rounded-full" />
-            <h1 className="text-2xl font-bold text-white">Dice</h1>
+            <h1 className="text-2xl font-bold text-white">Dados</h1>
           </div>
           <div className="bg-black/40 rounded-lg px-3 py-2 border border-white/5 text-xs text-gray-400 mb-4">
             <span className="text-yellow-400 font-bold">Como jogar:</span> Escolha um numero com o slider. Se o dado rolar abaixo do seu numero, voce ganha! Quanto menor o numero, maior o multiplicador.

@@ -22,7 +22,7 @@ interface SettingProviderProps {
 }
 
 export const SettingProvider: React.FC<SettingProviderProps> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false);
 
 
   const value: SettingContextType = {

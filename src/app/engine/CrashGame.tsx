@@ -11,6 +11,11 @@ export default function PhaserGame({ onReady }: { onReady?: (game: Phaser.Game) 
             type: Phaser.WEBGL,
             parent: 'phaser-container',
             backgroundColor: '#FFFF0000',
+            input: {
+                touch: {
+                    capture: false,
+                },
+            },
             physics: {
                 default: 'arcade',
                 arcade: {
@@ -56,5 +61,5 @@ export default function PhaserGame({ onReady }: { onReady?: (game: Phaser.Game) 
         }
     };
     window.onresize = () => window.sizeChanged();
-    return <div id="phaser-container" className='w-full h-full' />;
+    return <div id="phaser-container" className='w-full h-full' style={{ touchAction: 'pan-y' }} />;
 }

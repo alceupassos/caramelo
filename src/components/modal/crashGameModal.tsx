@@ -27,23 +27,23 @@ const CrashGameModal = (props: any) => {
       <ModalContent>
         {() => (
           <>
-            <ModalHeader className="flex flex-col gap-1">Round #{game?.round}</ModalHeader>
+            <ModalHeader className="flex flex-col gap-1">Rodada #{game?.round}</ModalHeader>
 
             <ModalBody>
               {winner ? <div className='flex flex-col items-center'>
-                <p>Winner</p>
+                <p>Vencedor</p>
                 <div className=''>
                   <Image src={winner?.user?.avatar ?? "/assets/images/avatar/default.webp"} className='w-40 h-40' alt='winner' />
                 </div>
                 <p className='text-white text-center font-bold text-2xl'>{game?.players.filter((p: any) => p.status === "WIN")[0]?.user?.username}</p>
               </div>:
               <div className=' flex flex-col items-center'>
-                <p>No winner for this round.</p>
+                <p>Sem vencedor nesta rodada.</p>
                 <Image src={`/assets/images/avatar/default.webp`} alt='nowinner' className='w-40 h-40' />
               </div>
               }
               <div className=''>
-                <p className='text-white'>Crashed: <span className='text-white/40'>{new Date(game?.createdAt!).toLocaleTimeString("en-GB", { hour12: false })}</span></p>
+                <p className='text-white'>Crash: <span className='text-white/40'>{new Date(game?.createdAt!).toLocaleTimeString("pt-BR", { hour12: false })}</span></p>
               </div>
               <div className='gap-2 items-center flex flex-col'>
                 {game?.players.map((user: any, idx: number) => (
@@ -72,7 +72,7 @@ const CrashGameModal = (props: any) => {
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onPress={onClose}>
-                Close
+                Fechar
               </Button>
             </ModalFooter>
           </>

@@ -2,11 +2,11 @@ import * as Phaser from 'phaser';
 
 const REEL_COUNT = 5;
 const VISIBLE_ROWS = 3;
-const SYMBOL_SIZE = 120;
-const SYMBOL_GAP = 10;
-const REEL_WIDTH = SYMBOL_SIZE + SYMBOL_GAP;
 const SPIN_SPEED = 30;
 const REEL_STOP_DELAY = 300;
+const TITLE_HEIGHT = 50;
+const WIN_TEXT_HEIGHT = 40;
+const MAX_SYMBOL_SIZE = 120;
 
 interface SymbolDef {
   key: string;
@@ -73,36 +73,79 @@ export default class TigrinhoScene extends Phaser.Scene {
   private frameRect!: Phaser.GameObjects.Rectangle;
   private reelAreaX = 0;
   private reelAreaY = 0;
-  private totalSymbolsPerReel = 20; // extra symbols for scrolling effect
+  private totalSymbolsPerReel = 20;
+
+  // Dynamic sizing
+  private symbolSize = 120;
+  private symbolGap = 8;
+  private reelWidth = 128;
+  private emojiFontSize = 48;
 
   constructor() {
     super({ key: 'TigrinhoScene' });
   }
 
+  private calculateSizes() {
+    const { width, height } = this.scale;
+
+    const availableWidth = width - 20;
+
+    // Calculate symbol size based on width (limiting factor on mobile)
+    const maxByWidth = Math.floor(availableWidth / REEL_COUNT) - 6;
+    // Also ensure 3 rows + title + win text fit in height
+    const availableGridHeight = height - TITLE_HEIGHT - WIN_TEXT_HEIGHT - 30;
+    const maxByHeight = Math.floor(availableGridHeight / VISIBLE_ROWS) - 6;
+
+    this.symbolSize = Math.min(maxByHeight, maxByWidth, MAX_SYMBOL_SIZE);
+    this.symbolGap = Math.max(4, Math.floor(this.symbolSize * 0.06));
+    this.reelWidth = this.symbolSize + this.symbolGap;
+    this.emojiFontSize = Math.max(24, Math.floor(this.symbolSize * 0.4));
+
+    // Total content block: title + grid + win text
+    const cellHeight = this.symbolSize + this.symbolGap;
+    const gridHeight = VISIBLE_ROWS * cellHeight;
+    const totalContentHeight = TITLE_HEIGHT + gridHeight + WIN_TEXT_HEIGHT;
+    const totalReelWidth = REEL_COUNT * this.reelWidth;
+
+    // Center the entire content block vertically
+    const contentStartY = Math.max(10, (height - totalContentHeight) / 2);
+
+    this.reelAreaX = (width - totalReelWidth) / 2;
+    // reelAreaY = center of first symbol row
+    this.reelAreaY = contentStartY + TITLE_HEIGHT + cellHeight / 2;
+  }
+
   create() {
     const { width, height } = this.scale;
+
+    this.calculateSizes();
 
     // Background
     this.bgRect = this.add.rectangle(width / 2, height / 2, width, height, 0x0a0a1a);
 
-    // Calculate reel area position (centered)
-    const totalReelWidth = REEL_COUNT * REEL_WIDTH;
-    const totalReelHeight = VISIBLE_ROWS * (SYMBOL_SIZE + SYMBOL_GAP);
-    this.reelAreaX = (width - totalReelWidth) / 2;
-    this.reelAreaY = (height - totalReelHeight) / 2 - 20;
+    const totalReelWidth = REEL_COUNT * this.reelWidth;
+    const cellHeight = this.symbolSize + this.symbolGap;
 
-    // Frame around reels
+    // Frame around reels - tightly wrap the visible 3 rows
+    // Mask area: from (reelAreaY - cellHeight/2) to (reelAreaY + (VISIBLE_ROWS-1)*cellHeight + cellHeight/2)
+    const maskTop = this.reelAreaY - cellHeight / 2;
+    const maskBottom = this.reelAreaY + (VISIBLE_ROWS - 1) * cellHeight + cellHeight / 2;
+    const frameCenterY = (maskTop + maskBottom) / 2;
+    const frameHeight = maskBottom - maskTop;
+
     this.frameRect = this.add.rectangle(
       width / 2,
-      this.reelAreaY + totalReelHeight / 2,
+      frameCenterY,
       totalReelWidth + 20,
-      totalReelHeight + 20,
+      frameHeight + 16,
       0x1a1a2e
     ).setStrokeStyle(3, 0xFFD700);
 
-    // Title
-    this.titleText = this.add.text(width / 2, this.reelAreaY - 50, 'CARAMELINHO', {
-      fontSize: '42px',
+    // Title - positioned above the frame
+    const titleFontSize = Math.min(42, Math.floor(width * 0.08));
+    const titleY = maskTop - 30;
+    this.titleText = this.add.text(width / 2, titleY, 'CARAMELINHO', {
+      fontSize: `${titleFontSize}px`,
       fontFamily: 'monospace',
       color: '#FFD700',
       stroke: '#000000',
@@ -110,9 +153,9 @@ export default class TigrinhoScene extends Phaser.Scene {
       shadow: { offsetX: 2, offsetY: 2, color: '#FF8C00', blur: 8, fill: true },
     }).setOrigin(0.5);
 
-    // Win text
-    this.winText = this.add.text(width / 2, this.reelAreaY + totalReelHeight + 50, '', {
-      fontSize: '36px',
+    // Win text - positioned below the frame
+    this.winText = this.add.text(width / 2, maskBottom + 30, '', {
+      fontSize: `${Math.min(36, Math.floor(width * 0.06))}px`,
       fontFamily: 'monospace',
       color: '#FFD700',
       stroke: '#000000',
@@ -144,7 +187,7 @@ export default class TigrinhoScene extends Phaser.Scene {
   }
 
   private createReel(reelIndex: number) {
-    const x = this.reelAreaX + reelIndex * REEL_WIDTH + REEL_WIDTH / 2;
+    const x = this.reelAreaX + reelIndex * this.reelWidth + this.reelWidth / 2;
     const y = this.reelAreaY;
 
     const container = this.add.container(x, y);
@@ -152,18 +195,17 @@ export default class TigrinhoScene extends Phaser.Scene {
 
     const symbols: ReelSymbol[] = [];
 
-    // Create enough symbols for scrolling (visible + extras for animation)
     for (let row = 0; row < this.totalSymbolsPerReel; row++) {
-      const symY = row * (SYMBOL_SIZE + SYMBOL_GAP);
+      const symY = row * (this.symbolSize + this.symbolGap);
       const symIndex = Phaser.Math.Between(0, SYMBOLS.length - 1);
       const sym = SYMBOLS[symIndex];
 
-      const bg = this.add.rectangle(0, symY, SYMBOL_SIZE, SYMBOL_SIZE, sym.color, 0.85)
+      const bg = this.add.rectangle(0, symY, this.symbolSize, this.symbolSize, sym.color, 0.85)
         .setStrokeStyle(2, 0xFFFFFF, 0.3);
       bg.setOrigin(0.5);
 
       const text = this.add.text(0, symY, sym.emoji, {
-        fontSize: '48px',
+        fontSize: `${this.emojiFontSize}px`,
         fontFamily: 'sans-serif',
       }).setOrigin(0.5);
 
@@ -173,14 +215,14 @@ export default class TigrinhoScene extends Phaser.Scene {
 
     this.reelSymbols.push(symbols);
 
-    // Create mask for reel (only show VISIBLE_ROWS symbols)
-    const maskHeight = VISIBLE_ROWS * (SYMBOL_SIZE + SYMBOL_GAP);
+    // Create mask for reel
+    const maskHeight = VISIBLE_ROWS * (this.symbolSize + this.symbolGap);
     const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false } as any);
     maskGraphics.fillStyle(0xffffff);
     maskGraphics.fillRect(
-      x - REEL_WIDTH / 2,
-      this.reelAreaY - (SYMBOL_SIZE + SYMBOL_GAP) / 2,
-      REEL_WIDTH,
+      x - this.reelWidth / 2,
+      this.reelAreaY - (this.symbolSize + this.symbolGap) / 2,
+      this.reelWidth,
       maskHeight
     );
     const mask = maskGraphics.createGeometryMask();
@@ -228,11 +270,9 @@ export default class TigrinhoScene extends Phaser.Scene {
     this.spinning = true;
     this.reelsStopped = 0;
 
-    // Clear previous win display
     this.winLineGraphics.clear();
     this.winText.setAlpha(0);
 
-    // Reset symbol scales/alphas from any previous win animation
     for (let r = 0; r < REEL_COUNT; r++) {
       for (let row = 0; row < VISIBLE_ROWS; row++) {
         const reelSym = this.reelSymbols[r][row];
@@ -241,10 +281,8 @@ export default class TigrinhoScene extends Phaser.Scene {
       }
     }
 
-    // Generate the final result
     this.setRandomGrid();
 
-    // Start each reel spinning
     for (let r = 0; r < REEL_COUNT; r++) {
       this.spinReel(r);
     }
@@ -253,9 +291,7 @@ export default class TigrinhoScene extends Phaser.Scene {
   private spinReel(reelIndex: number) {
     const container = this.reelContainers[reelIndex];
     const symbols = this.reelSymbols[reelIndex];
-    const symbolHeight = SYMBOL_SIZE + SYMBOL_GAP;
 
-    // During spin animation: rapidly cycle through random symbols
     const spinDuration = 1000 + reelIndex * REEL_STOP_DELAY;
     const cycleInterval = 60;
     let elapsed = 0;
@@ -265,7 +301,6 @@ export default class TigrinhoScene extends Phaser.Scene {
       callback: () => {
         elapsed += cycleInterval;
 
-        // Randomize visible symbols during spin
         for (let row = 0; row < VISIBLE_ROWS; row++) {
           const randIdx = this.getWeightedRandomSymbol();
           const sym = SYMBOLS[randIdx];
@@ -274,7 +309,6 @@ export default class TigrinhoScene extends Phaser.Scene {
           symbols[row].text.setText(sym.emoji);
         }
 
-        // Add a vertical jitter effect
         container.y = this.reelAreaY + Phaser.Math.Between(-3, 3);
 
         if (elapsed >= spinDuration) {
@@ -290,7 +324,6 @@ export default class TigrinhoScene extends Phaser.Scene {
     const container = this.reelContainers[reelIndex];
     const symbols = this.reelSymbols[reelIndex];
 
-    // Set final symbols from grid
     for (let row = 0; row < VISIBLE_ROWS; row++) {
       const symIdx = this.grid[reelIndex][row];
       const sym = SYMBOLS[symIdx];
@@ -299,7 +332,6 @@ export default class TigrinhoScene extends Phaser.Scene {
       symbols[row].text.setText(sym.emoji);
     }
 
-    // Bounce stop effect
     this.tweens.add({
       targets: container,
       y: this.reelAreaY + 15,
@@ -320,11 +352,9 @@ export default class TigrinhoScene extends Phaser.Scene {
   private onAllReelsStopped() {
     this.spinning = false;
 
-    // Check for wins
     const wins = this.checkWins();
     let totalWin = 0;
 
-    // Check for scatter (free spins)
     let scatterCount = 0;
     for (let r = 0; r < REEL_COUNT; r++) {
       for (let row = 0; row < VISIBLE_ROWS; row++) {
@@ -361,7 +391,6 @@ export default class TigrinhoScene extends Phaser.Scene {
       const firstSymIdx = this.grid[0][payline[0]];
       const firstSym = SYMBOLS[firstSymIdx];
 
-      // Skip scatter from payline wins (scatter has its own logic)
       if (firstSym.type === 'scatter') continue;
 
       let matchCount = 1;
@@ -371,7 +400,6 @@ export default class TigrinhoScene extends Phaser.Scene {
         const symIdx = this.grid[r][payline[r]];
         const sym = SYMBOLS[symIdx];
 
-        // Wild matches anything except scatter
         if (symIdx === firstSymIdx || sym.type === 'wild' || firstSym.type === 'wild') {
           matchCount++;
           positions.push({ reel: r, row: payline[r] });
@@ -382,7 +410,7 @@ export default class TigrinhoScene extends Phaser.Scene {
 
       if (matchCount >= 3) {
         const effectiveSym = firstSym.type === 'wild' ? firstSym : firstSym;
-        const payout = (effectiveSym.multiplier[matchCount] || 0) * (this.betAmount / 20); // divide by number of paylines
+        const payout = (effectiveSym.multiplier[matchCount] || 0) * (this.betAmount / 20);
         if (payout > 0) {
           wins.push({
             paylineIndex: p,
@@ -401,8 +429,7 @@ export default class TigrinhoScene extends Phaser.Scene {
   private playWinAnimation(wins: { paylineIndex: number; positions: { reel: number; row: number }[]; payout: number }[]) {
     const totalWin = wins.reduce((s, w) => s + w.payout, 0);
 
-    // Show win text
-    this.winText.setText(`WIN: ${Math.round(totalWin).toLocaleString()}`);
+    this.winText.setText(`GANHOU: ${Math.round(totalWin).toLocaleString()}`);
     this.winText.setAlpha(1);
     this.tweens.add({
       targets: this.winText,
@@ -419,7 +446,6 @@ export default class TigrinhoScene extends Phaser.Scene {
       },
     });
 
-    // Highlight winning positions
     const winPositions = new Set<string>();
     for (const win of wins) {
       for (const pos of win.positions) {
@@ -427,13 +453,11 @@ export default class TigrinhoScene extends Phaser.Scene {
       }
     }
 
-    // Dim non-winning symbols, pulse winning ones
     for (let r = 0; r < REEL_COUNT; r++) {
       for (let row = 0; row < VISIBLE_ROWS; row++) {
         const reelSym = this.reelSymbols[r][row];
         const key = `${r}-${row}`;
         if (winPositions.has(key)) {
-          // Pulse winning symbols
           this.tweens.add({
             targets: reelSym.text,
             scale: { from: 1, to: 1.4 },
@@ -449,7 +473,6 @@ export default class TigrinhoScene extends Phaser.Scene {
       }
     }
 
-    // Draw payline paths
     this.winLineGraphics.clear();
     const colors = [0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFA500, 0xFF69B4];
 
@@ -461,8 +484,8 @@ export default class TigrinhoScene extends Phaser.Scene {
 
       for (let i = 0; i < win.positions.length; i++) {
         const pos = win.positions[i];
-        const x = this.reelAreaX + pos.reel * REEL_WIDTH + REEL_WIDTH / 2;
-        const y = this.reelAreaY + pos.row * (SYMBOL_SIZE + SYMBOL_GAP);
+        const x = this.reelAreaX + pos.reel * this.reelWidth + this.reelWidth / 2;
+        const y = this.reelAreaY + pos.row * (this.symbolSize + this.symbolGap);
 
         if (i === 0) {
           this.winLineGraphics.moveTo(x, y);
@@ -474,7 +497,6 @@ export default class TigrinhoScene extends Phaser.Scene {
       this.winLineGraphics.strokePath();
     }
 
-    // Auto-clear win display after a delay
     this.time.delayedCall(3000, () => {
       this.winLineGraphics.clear();
       this.winText.setAlpha(0);
@@ -496,24 +518,45 @@ export default class TigrinhoScene extends Phaser.Scene {
   private handleResize() {
     const { width, height } = this.scale;
 
+    // Recalculate all dynamic sizes
+    this.calculateSizes();
+
     this.bgRect.setPosition(width / 2, height / 2);
     this.bgRect.setSize(width, height);
 
-    const totalReelWidth = REEL_COUNT * REEL_WIDTH;
-    const totalReelHeight = VISIBLE_ROWS * (SYMBOL_SIZE + SYMBOL_GAP);
-    this.reelAreaX = (width - totalReelWidth) / 2;
-    this.reelAreaY = (height - totalReelHeight) / 2 - 20;
+    const totalReelWidth = REEL_COUNT * this.reelWidth;
+    const cellHeight = this.symbolSize + this.symbolGap;
 
-    this.frameRect.setPosition(width / 2, this.reelAreaY + totalReelHeight / 2);
-    this.frameRect.setSize(totalReelWidth + 20, totalReelHeight + 20);
+    const maskTop = this.reelAreaY - cellHeight / 2;
+    const maskBottom = this.reelAreaY + (VISIBLE_ROWS - 1) * cellHeight + cellHeight / 2;
+    const frameCenterY = (maskTop + maskBottom) / 2;
+    const frameHeight = maskBottom - maskTop;
 
-    this.titleText.setPosition(width / 2, this.reelAreaY - 50);
-    this.winText.setPosition(width / 2, this.reelAreaY + totalReelHeight + 50);
+    this.frameRect.setPosition(width / 2, frameCenterY);
+    this.frameRect.setSize(totalReelWidth + 20, frameHeight + 16);
 
-    // Reposition reel containers
+    const titleFontSize = Math.min(42, Math.floor(width * 0.08));
+    this.titleText.setPosition(width / 2, maskTop - 30);
+    this.titleText.setFontSize(titleFontSize);
+
+    this.winText.setPosition(width / 2, maskBottom + 30);
+
+    // Reposition reel containers and rebuild symbols/masks
     for (let r = 0; r < REEL_COUNT; r++) {
-      const x = this.reelAreaX + r * REEL_WIDTH + REEL_WIDTH / 2;
+      const x = this.reelAreaX + r * this.reelWidth + this.reelWidth / 2;
       this.reelContainers[r].setPosition(x, this.reelAreaY);
+
+      // Update symbol positions within each container
+      const symbols = this.reelSymbols[r];
+      for (let row = 0; row < this.totalSymbolsPerReel; row++) {
+        if (symbols[row]) {
+          const symY = row * (this.symbolSize + this.symbolGap);
+          symbols[row].bg.setPosition(0, symY);
+          symbols[row].bg.setSize(this.symbolSize, this.symbolSize);
+          symbols[row].text.setPosition(0, symY);
+          symbols[row].text.setFontSize(this.emojiFontSize);
+        }
+      }
 
       // Rebuild masks
       if (this.reelMasks[r]) {
@@ -522,10 +565,10 @@ export default class TigrinhoScene extends Phaser.Scene {
       const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false } as any);
       maskGraphics.fillStyle(0xffffff);
       maskGraphics.fillRect(
-        x - REEL_WIDTH / 2,
-        this.reelAreaY - (SYMBOL_SIZE + SYMBOL_GAP) / 2,
-        REEL_WIDTH,
-        VISIBLE_ROWS * (SYMBOL_SIZE + SYMBOL_GAP)
+        x - this.reelWidth / 2,
+        this.reelAreaY - (this.symbolSize + this.symbolGap) / 2,
+        this.reelWidth,
+        VISIBLE_ROWS * (this.symbolSize + this.symbolGap)
       );
       const mask = maskGraphics.createGeometryMask();
       this.reelContainers[r].setMask(mask);

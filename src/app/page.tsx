@@ -13,10 +13,10 @@ const games = [
     gradient: 'from-red-900/60 to-orange-900/40',
   },
   {
-    name: 'Tigrinho',
+    name: 'Caramelinho',
     href: '/tigrinho',
-    emoji: '🐯',
-    description: 'O clássico Fortune Tiger',
+    emoji: '🐕',
+    description: 'O clássico Fortune Caramelo',
     gradient: 'from-amber-900/60 to-yellow-900/40',
   },
   {
@@ -27,14 +27,14 @@ const games = [
     gradient: 'from-yellow-900/60 to-amber-800/40',
   },
   {
-    name: 'Mines',
+    name: 'Minas',
     href: '/mines',
     emoji: '💣',
     description: 'Desvie das minas e ganhe!',
     gradient: 'from-emerald-900/60 to-green-900/40',
   },
   {
-    name: 'Dice',
+    name: 'Dados',
     href: '/dice',
     emoji: '🎲',
     description: 'Role os dados da sorte',

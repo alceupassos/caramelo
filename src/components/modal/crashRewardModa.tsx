@@ -20,20 +20,20 @@ const CrashRewardModal = (props: any) => {
             <ModalContent className='relative scrollbar-hide'>
                 {() => (
                     <><Sparkles flicker={false} />
-                        <ModalHeader className="flex flex-col gap-1">Round #{summary.round}</ModalHeader>
-                        <p className='text-white text-center text-2xl font-bold'>Winner</p>
+                        <ModalHeader className="flex flex-col gap-1">Rodada #{summary.round}</ModalHeader>
+                        <p className='text-white text-center text-2xl font-bold'>Vencedor</p>
                         <ModalBody>
                             <div className='flex flex-col items-center'>
                                 <Image src={summary.winner?.avatar} alt={summary.winner?.username} className='w-40 h-40 rounded-full' />
                                 <div className='flex flex-col'>
-                                    <p className='text-white'>{summary.winner?.username} wins</p>
+                                    <p className='text-white'>{summary.winner?.username} ganhou</p>
                                     <p className='text-white text-center'>{summary.payouts?.toLocaleString()}</p>
                                 </div>
                             </div>
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" onPress={onClose}>
-                                Close
+                                Fechar
                             </Button>
                         </ModalFooter>
                     </>

@@ -41,16 +41,16 @@ const LogoutConfirm: React.FC<LogoutConfirmProps> = ({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-black/90 p-6 rounded-lg backdrop-blur-sm max-w-md w-full mx-4">
-        <h3 className="text-xl font-bold text-white mb-4">Confirm Logout</h3>
+        <h3 className="text-xl font-bold text-white mb-4">Confirmar Saida</h3>
 
         <p className="text-gray-300 mb-6">
-          Are you sure you want to logout? You'll need to reconnect your wallet to access your profile.
+          Tem certeza que deseja sair? Voce precisara reconectar sua carteira para acessar seu perfil.
         </p>
 
         {userProfile && (
           <div className="bg-white/10 p-3 rounded-lg mb-6">
             <p className="text-white text-sm">
-              <span className="text-gray-400">Currently logged in as:</span>
+              <span className="text-gray-400">Conectado como:</span>
               <br />
               <span className="font-medium">{userProfile.username}</span>
               <br />
@@ -67,7 +67,7 @@ const LogoutConfirm: React.FC<LogoutConfirmProps> = ({
             disabled={isLoggingOut}
             className="flex-1 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-800 text-white font-bold py-3 px-4 rounded-lg transition-colors"
           >
-            Cancel
+            Cancelar
           </button>
           <button
             onClick={handleLogout}
@@ -77,10 +77,10 @@ const LogoutConfirm: React.FC<LogoutConfirmProps> = ({
             {isLoggingOut ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Logging out...
+                Saindo...
               </div>
             ) : (
-              'Logout'
+              'Sair'
             )}
           </button>
         </div>

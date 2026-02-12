@@ -22,7 +22,7 @@ export default function LoadingOverlay() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black text-white">
-      <p className="text-xl animate-pulse">Loading...</p>
+      <p className="text-xl animate-pulse">Carregando...</p>
     </div>
   );
 }

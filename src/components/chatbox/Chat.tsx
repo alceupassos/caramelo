@@ -71,7 +71,7 @@ const Chat = () => {
                         <div className="flex items-center justify-between bg-[#162135] text-[#919191] pointer-events-none w-full h-max px-3 py-2 backdrop-blur-xl rounded-md">
                             <div className="flex items-center gap-1.5 text-sm text-[#E3E3E3]">
                                 {/* <Icon icon="material-symbols-light:pause-rounded" width="24" height="24" style={{ color: "#E3E3E3" }} /> */}
-                                <p>Chat Paused</p>
+                                <p>Chat Pausado</p>
                             </div>
                         </div>
                     </div>
@@ -90,7 +90,7 @@ const Chat = () => {
                             <Input
                                 name="message"
                                 id="sendMsg"
-                                placeholder="Type Message Here..."
+                                placeholder="Digite sua mensagem..."
                                 maxLength={160}
                                 value={input}
                                 className={` `}
@@ -113,7 +113,7 @@ const Chat = () => {
                         <div className="flex justify-between">
                             <div className="flex items-center gap-1.5 cursor-pointer text-[#A2A2A2] hover:text-white transition-colors">
                                 {/* <Icon icon="icon-park-solid:info" width="12" height="12" style={{ color: "#A2A2A2" }} /> */}
-                                <p className="font-inter text-sm font-medium leading-[21px]">Chat Rules</p>
+                                <p className="font-inter text-sm font-medium leading-[21px]">Regras do Chat</p>
                             </div>
                             <div className="flex items-center gap-1.5 cursor-pointer text-[#A2A2A2] transition-colors">
                                 {/* <Icon icon="tabler:message-filled" width="16" height="16" style={{ color: "#A2A2A2" }} /> */}

@@ -13,10 +13,10 @@ const PRIVY_CONFIGURED = !!process.env.NEXT_PUBLIC_PRIVY_APP_ID;
 
 const games = [
     { name: 'Crash', href: '/crash', emoji: '🚀' },
-    { name: 'Tigrinho', href: '/tigrinho', emoji: '🐯' },
+    { name: 'Caramelinho', href: '/tigrinho', emoji: '🐕' },
     { name: 'Coinflip', href: '/coinflip', emoji: '🪙' },
-    { name: 'Mines', href: '/mines', emoji: '💣' },
-    { name: 'Dice', href: '/dice', emoji: '🎲' },
+    { name: 'Minas', href: '/mines', emoji: '💣' },
+    { name: 'Dados', href: '/dice', emoji: '🎲' },
 ];
 
 const Navbar = () => {

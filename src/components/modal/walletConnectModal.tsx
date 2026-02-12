@@ -35,22 +35,22 @@ const WalletConnectModal = () => {
     const quickLinks = [
         {
             icon: <DrawingPinIcon />,
-            title: "FF Leaderboard",
+            title: "Classificacao",
             path: "/leaderboard"
         },
         {
             icon: <MixerHorizontalIcon />,
-            title: "Options",
+            title: "Opcoes",
             path: "/options"
         },
         {
             icon: <LightningBoltIcon />,
-            title: "Statistac",
+            title: "Estatisticas",
             path: "/statistic"
         },
         {
             icon: <ReaderIcon />,
-            title: "Transactions",
+            title: "Transacoes",
             path: "/transactions"
         },
     ]
@@ -95,7 +95,7 @@ const WalletConnectModal = () => {
                                 <div className=' flex justify-between items-center w-full'>
                                     <div className='flex items-center gap-2'>
                                         <BellIcon />
-                                        <p className='text-white/30'>Notifications</p>
+                                        <p className='text-white/30'>Notificacoes</p>
                                     </div>
                                     <div>
                                         <span className='px-2 flex items-center h-8 border rounded-md border-white/20 text-white/30'>
@@ -155,7 +155,7 @@ const WalletConnectModal = () => {
                                     <Button className='hover:bg-white/10 rounded-md flex gap-2 items-center bg-transparent text-white/40 hover:text-white justify-start'
                                         onPress={() => logout()}>
                                         <EnterIcon />
-                                        <p>Disconnect</p>
+                                        <p>Desconectar</p>
                                     </Button>
                                 </div>
                             </div>
@@ -187,7 +187,7 @@ const WalletConnectModal = () => {
                                 }
                             }
                         >
-                            {user?.wallet?.address ? user?.wallet?.address.slice(0, 5) + "..." + user?.wallet?.address.slice(-4) : "Sign in"}
+                            {user?.wallet?.address ? user?.wallet?.address.slice(0, 5) + "..." + user?.wallet?.address.slice(-4) : "Entrar"}
                         </PrimaryButton>
                 }
             </div>

@@ -25,7 +25,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://caramelo.angra.io"),
   title: "Caramelo Casino",
-  description: "O Casino Mais Viciante da Web3 - Crash, Tigrinho, Coinflip, Mines, Dice",
+  description: "O Casino Mais Viciante da Web3 - Crash, Caramelinho, Coinflip, Minas, Dados",
   manifest: "/manifest.json",
   icons: {
     icon: "/icone.png",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Caramelo Casino",
-    description: "O Casino Mais Viciante da Web3 - Crash, Tigrinho, Coinflip, Mines, Dice",
+    description: "O Casino Mais Viciante da Web3 - Crash, Caramelinho, Coinflip, Minas, Dados",
     images: [
       {
         url: "/og-image.jpg",
