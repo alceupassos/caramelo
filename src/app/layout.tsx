@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     description: "O Casino Mais Viciante da Web3 - Crash, Tigrinho, Coinflip, Mines, Dice",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 450,
         height: 307,
         alt: "Caramelo Casino",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Caramelo Casino",
     description: "O Casino Mais Viciante da Web3",
-    images: ["/og-image.png"],
+    images: ["/og-image.jpg"],
   },
   appleWebApp: {
     capable: true,
